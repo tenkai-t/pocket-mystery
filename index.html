@@ -857,6 +857,7 @@ function initExplore(){const cv=exCv;
 const roomCv=document.getElementById('room');roomCv.width=RW*2;roomCv.height=RH*2;initRoom();
 const exCv=document.getElementById('ex');exCv.width=VW*2;exCv.height=VH*2;initExplore();
 document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+setMode('room');
 {const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
  const sr=document.getElementById('slotRow');
  for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'・ノート'+e.notes.length:'')}}catch(e){}
