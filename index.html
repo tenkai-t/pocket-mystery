@@ -49,18 +49,18 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
 <div class="tslab">セーブデータ</div><div id="slotRow"></div>
-<div class="tnote">ぜんぶで 10ステージ ／ おとが でます<br>ver 2026.11.15-3</div>
+<div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div class="w">
 <h1>ポケットミステリー</h1>
-<div class="tabs" id="mtabs"><button data-m="dress" class="on">きせかえ</button><button data-m="room">マイルーム</button><button data-m="explore">たんけん</button></div>
-<div id="pg1">
+<div class="tabs" id="mtabs"><button data-m="room" class="on">マイルーム</button><button data-m="explore">たんけん</button></div>
+<div id="pg1" hidden>
 <div class="tabs" id="ctabs"></div>
 <div class="slots" id="atabs" style="margin:0 0 8px"></div>
 <div class="stage"><div><canvas id="big"></canvas></div><div><canvas id="small"></canvas><div class="lab">ちいさい表示</div></div></div>
 
 </div>
-<div id="pg2" hidden>
+<div id="pg2">
 <canvas id="room" style="width:min(100%,384px);margin:0 auto;image-rendering:pixelated;touch-action:none;border-radius:14px;border:2px solid var(--line);display:block"></canvas>
 <div class="lab" id="selname" style="margin:6px 0">ものをタップしてえらぶ</div>
 <div class="ctl" id="ctl"><button id="mL">◀</button><button id="mU">▲</button><button id="mD">▼</button><button id="mR">▶</button><button id="rflip">むきをかえる</button><button id="rdel">かたづける</button></div>
@@ -86,7 +86,7 @@ const D={"items":[{"id":"wizard","slot":"head","name":"おれまがりぼうし"
 
 function animList(c){const base=[['idle','たいき'],['walk','あるく'],['joy','よろこぶ'],['sleep','ねる']];return(c==='kohaku'||c==='astra')?base.concat([['idle_down','まえ'],['idle_up','うしろ']]):base.concat([['idle_side','よこ'],['idle_up','うしろ'],['special','とくべつ']])}
 function vsuf(c,v){if(c==='kohaku'||c==='astra')return v==='up'?'_up':v==='down'?'_down':'';return v==='up'?'_up':v==='side'?'_side':''}
-const OX=2,OY=8,W=28;let mode='dress',ch='ribbon',slot='head',an='idle',fi=0,timer=null;
+const OX=2,OY=8,W=28;let mode='room',ch='ribbon',slot='head',an='idle',fi=0,timer=null;
 const mem={};const SLOT=Math.min(3,Math.max(1,parseInt(localStorage.getItem('mv_activeslot')||'1')||1));const SK=k=>SLOT===1?k:k.replace('mv_','mv_s'+SLOT+'_');
 const st={get(k){try{return localStorage.getItem(SK(k))}catch(e){return mem[SK(k)]||null}},set(k,v){try{localStorage.setItem(SK(k),v)}catch(e){mem[SK(k)]=v}}};
 function load(){try{return JSON.parse(st.get('mv_dress1')||'{}')}catch(e){return{}}}
@@ -862,7 +862,7 @@ document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.da
  if(auto){ts.remove()}
  if(EX&&(EX.area>1||(EX.notes&&EX.notes.length)))sb.textContent='▶ つづきから はじめる';
  const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');setTimeout(()=>ts.remove(),600)};
- sb.onclick=e=>{e.stopPropagation();go()};ts.onclick=go}
+ sb.onclick=e=>{e.stopPropagation();go()}}
 ui();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script></body></html>
