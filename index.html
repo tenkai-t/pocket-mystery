@@ -531,10 +531,10 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
    else{addStat(L,'k',1);saveEx();sfx('bad');say(['…ちがうみたいだ。【じっけん】','冷蔵庫で 水が カチカチに なる 様子を 思いうかべよう。'])}});break;
  case'lakeSpot':if(f.frz8)say(['湖は 凍って いて、歩いて わたれる。','島まで 行ってみよう。']);
   else if(!can(L,'ice'))say(['大きな 湖だ。水は 冷たそう。','凍れば 歩いて わたれそうだ。氷の 特技の 子なら…?']);
-  else say(['氷の 力で、湖の 水が みるみる 凍って いく!【かんさつ】','バリバリと 音を 立てて、島まで 氷の 道が できた!【はっけん】'],null,()=>{f.frz8=true;discover('freeze',L,'k',2);sfx('ok')});break;
+  else say(['氷の 力で、湖の 水が みるみる 凍って いく!【かんさつ】','バリバリと 音を 立てて、島まで 氷の 道が できた!【はっけん】'],null,()=>{f.frz8=true;discover('freeze',L,'k',2);sfx('freeze')});break;
  case'iceFlower':f.fruit8=true;addStat(L,'c',2);saveEx();sfx('pick');say(['星の 実を みつけた!','氷の 中で、ほのかに 温かく 光って いる。']);break;
  case'iceWall':if(!can(L,'fire'))say(['分厚い 氷の 壁が 道を ふさいで いる。','炎で 溶けそうだ。炎の 特技の 子なら…?']);
-  else say(['炎の 力で、氷の 壁が じゅわじゅわ 溶けて いく!【かんさつ】','やがて 壁は 水に なって 流れ、北への 道が ひらいた!【はっけん】'],null,()=>{f.melt8=true;discover('melt',L,'k',2);sfx('ok')});break;
+  else say(['炎の 力で、氷の 壁が じゅわじゅわ 溶けて いく!【かんさつ】','やがて 壁は 水に なって 流れ、北への 道が ひらいた!【はっけん】'],null,()=>{f.melt8=true;discover('melt',L,'k',2);sfx('melt')});break;
  case'chest8':if(f.door8)say(['宝箱は あいて いる。','氷の 門は ひらいて いる。']);
   else if(!f.fruit8)say(['氷の 宝箱だ。','星の 形の くぼみが ある。島に あった 星の 実が ひつようみたいだ。']);
   else say(['星の 実を くぼみに はめると…','宝箱が 光り、氷の 門が ゆっくり ひらいていく!【はっけん】'],null,()=>{f.door8=true;discover('door8',null,'',0);for(const c in EX.stats)addStat(c,'c',2);saveEx();sfx('gate')});break;
@@ -582,17 +582,21 @@ function checkPed(){const f=EX.f;if(f.pl.some(x=>!x))return;const want=['pink','
 function checkBoard(){const f=EX.f;if(f.bl.some(x=>!x))return;const want=['bat','wire','bulb'];
  if(want.every(k=>f.bl.includes(k))){f.door4=true;discover('door4',null,'',0);sfx('gate');for(const c in EX.stats)addStat(c,'c',2);saveEx();say(['でんきゅうが ぱっと 明るく 光った!【はっけん】','回路の 輪が つながり、回廊の門が ひらいていく…!'])}
  else{f.bl=[null,null,null];addStat(order[0],'k',1);addNote('fail4');saveEx();sfx('bad');say(['…でんきゅうは つかない。【じっけん】','部品は 手元に もどった。',f.bulbB&&!f.bulb?'われた 電球では 光らないかも。本物の 電球を さがそう。':'電池・導線・豆電球の 3つが そろって いるか 見なおそう。'])}}
-function startFly(to){fly={t:0,to,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
+function startFly(to){sfx('fly');fly={t:0,to,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
 function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[AREA],tg=fly.to?AR.to:AR.back;
  order.forEach((c,i)=>{const p=P(c),fr=fly.from[party.indexOf(p)];const ox=(i-1)*28;p.x=fr[0]+(tg[0]+ox-fr[0])*u;p.y=fr[1]+(tg[1]-fr[1])*u;p.moving=true;p.an='walk'});
  if(u>=1){if(AREA===1)EX.f.island=fly.to;else if(AREA===5||AREA===10)EX.f['isle'+AREA]=fly.to;else{EX.f['far'+AREA]=fly.to;if(AREA===2){EX.f.far=fly.to;if(fly.to)addNote('far')}}fly=null;sfx('ok');trail=[];for(let i=0;i<40;i++)trail.push([leader().x,leader().y]);saveEx()}}
 /* --- update --- */
+let stepAcc=130,lastTileC='';
 function exUpdate(dt){if(fly){stepFly(dt);animChars(dt);return}
  const L=leader();let dx=dir.x,dy=dir.y;L.moving=false;
  if((dx||dy)&&!dlg){const n=Math.hypot(dx,dy),mg=Math.min(1,n);dx/=n;dy/=n;const sp=TS*2.75*dt/1000*mg;let nx=L.x+dx*sp,ny=L.y+dy*sp;if(canStand(nx,L.y))L.x=nx;if(canStand(L.x,ny))L.y=ny;
   if(Math.abs(L.x-nx)>.01||Math.abs(L.y-ny)>.01){}
   L.moving=(Math.abs(dx)+Math.abs(dy))>0&&(canStand(nx,L.y)||canStand(L.x,ny));if(dx>.1)L.face=1;else if(dx<-.1)L.face=-1;if(L.moving)L.view=Math.abs(dy)>Math.abs(dx)*.7?(dy<0?'up':'down'):'side';
   const last=trail[trail.length-1];if(!last||Math.hypot(last[0]-L.x,last[1]-L.y)>TSTEP){trail.push([L.x,L.y]);if(trail.length>400)trail.shift()}}
+ if(L.moving){stepAcc+=dt;const tc=tileAt(Math.floor(L.x/TS),Math.floor(L.y/TS));
+  if(tc!==lastTileC){lastTileC=tc;if(tc===','){sfx('grass');stepAcc=60}}
+  if(stepAcc>=175){stepAcc=0;sfx(tc===','?'grass':tc==='~'?'ice':'step')}}else{stepAcc=130;lastTileC=''}
  order.forEach((c,i)=>{if(i===0)return;const p=P(c);const tr=trail[Math.max(0,trail.length-1-i*FOL)]||[L.x,L.y];const ddx=tr[0]-p.x,ddy=tr[1]-p.y,d=Math.hypot(ddx,ddy);
   if(d>1.2){const k=Math.min(1,dt/90);p.x+=ddx*k;p.y+=ddy*k;p.moving=true;if(Math.abs(ddx)>.4)p.face=ddx>0?1:-1;p.view=Math.abs(ddy)>Math.abs(ddx)*.7?(ddy<0?'up':'down'):'side'}else p.moving=false});
  if(gateOpen()&&tileAt(Math.floor(L.x/TS),Math.floor((L.y-18)/TS))==='G'&&!dlg){
@@ -748,7 +752,30 @@ function goalText(){const f=EX.f;if(AREA===1){if(f.cleared)return 'もくひょ�
  if(AREA===9){if(f.cleared9)return 'にじの泉 クリア!';if(f.door9)return 'もくひょう: ひらいた 泉の門へ すすもう';const n=(f.mixP?1:0)+(f.mixG?1:0)+(f.mixO?1:0);return 'もくひょう: 色水を 混ぜて 3色 作ろう（'+n+'/3）'}
  if(AREA===10){if(f.cleared10)return 'ちずきごうの村 クリア!';if(f.door10)return 'もくひょう: ひらいた 村の門へ すすもう';const n=(f.stA?1:0)+(f.stB?1:0)+(f.stC?1:0);return 'もくひょう: 地図記号で 建物を 探して スタンプを 集めよう（'+n+'/3）'}
  if(f.cleared2)return 'かずの どうくつ クリア!';if(f.door2)return 'もくひょう: ひらいた ひかりの とびらへ';return 'もくひょう: とびらを ひらこう（かぎ '+(f.key?'○':'×')+'　きそく '+(f.read2?'○':'×')+'　たにを こえた '+(f.far?'○':'×')+'）'}
-let ac=null;function sfx(t){if(EX.mute)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const seqs={ok:[[660,.08],[880,.1],[1175,.14]],pick:[[880,.07],[1320,.12]],bad:[[220,.14],[165,.2]],gate:[[523,.1],[659,.1],[784,.1],[1047,.3]]};let t0=ac.currentTime;for(const[fq,d]of seqs[t]){const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=fq;g.gain.setValueAtTime(.04,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(ac.destination);o.start(t0);o.stop(t0+d);t0+=d*.9}}catch(e){}}
+let ac=null;function sfx(kind){if(EX.mute)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t0=ac.currentTime;
+ const tone=(f,d,type,v,when,slide)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type||'square';const s=t0+(when||0);o.frequency.setValueAtTime(f,s);if(slide)o.frequency.exponentialRampToValueAtTime(slide,s+d);g.gain.setValueAtTime(v||.04,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)};
+ const nz=(d,type,f0,f1,v,when)=>{if(!ac._nb){const b=ac.createBuffer(1,ac.sampleRate*.5|0,ac.sampleRate),dd=b.getChannelData(0);for(let k=0;k<dd.length;k++)dd[k]=Math.random()*2-1;ac._nb=b}const s=t0+(when||0),src=ac.createBufferSource();src.buffer=ac._nb;src.loop=true;const fl=ac.createBiquadFilter();fl.type=type;fl.frequency.setValueAtTime(f0,s);if(f1)fl.frequency.exponentialRampToValueAtTime(f1,s+d);const g=ac.createGain();g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);src.connect(fl);fl.connect(g);g.connect(ac.destination);src.start(s);src.stop(s+d)};
+ const seq=(notes,type,v)=>{let w=0;for(const[f,d]of notes){tone(f,d,type,v,w);w+=d*.9}};
+ if(kind==='ok')seq([[660,.08],[880,.1],[1175,.14]],'square',.04);
+ else if(kind==='pick')seq([[880,.07],[1320,.12]],'square',.04);
+ else if(kind==='bad')seq([[220,.14],[165,.2]],'square',.04);
+ else if(kind==='gate'){tone(64,.6,'sine',.14,0,46);tone(98,.45,'triangle',.07,.04);nz(.55,'lowpass',260,null,.06,0);seq([[523,.1],[659,.1],[784,.1],[1047,.32]],'triangle',.05)}
+ else if(kind==='step'){nz(.07,'lowpass',520,null,.045);tone(135,.05,'sine',.018)}
+ else if(kind==='grass'){nz(.17,'bandpass',1150,720,.085);nz(.12,'bandpass',1700,950,.045,.04)}
+ else if(kind==='ice'){tone(1900,.06,'sine',.022);nz(.05,'highpass',3200,null,.028)}
+ else if(kind==='fly'){nz(.5,'bandpass',480,1650,.06);tone(392,.42,'sine',.018,0,784)}
+ else if(kind==='freeze'){seq([[1568,.09],[1319,.09],[1047,.09],[784,.16]],'triangle',.045);nz(.3,'highpass',4200,null,.014,.08)}
+ else if(kind==='melt'){tone(880,.5,'sine',.032,0,235);tone(1250,.16,'sine',.018,.3,880)}
+}catch(e){}}
+/* ===== BGM（オルゴールの ゆったり ループ） ===== */
+let bgmOn=false,bgmStep=0,bgmNext=0,bgmTimer=null,bgmGain=null;
+const BGM_STEP=.34,BGM_MEL=[659,0,784,0,880,0,784,0,659,0,523,0,587,0,659,0,698,0,880,0,784,0,659,0,587,0,494,0,523,0,0,0,659,0,784,0,1047,0,880,0,880,0,784,0,659,0,587,0,698,0,880,0,784,0,659,0,587,0,494,0,523,0,0,0],BGM_CH=[[261.6,329.6,392],[220,261.6,329.6],[174.6,220,261.6],[196,246.9,293.7]];
+function mbNote(f,tm){const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),g2=ac.createGain();o.type='sine';o.frequency.value=f;o2.type='sine';o2.frequency.value=f*2;g2.gain.value=.22;o.connect(g);o2.connect(g2);g2.connect(g);g.connect(bgmGain);g.gain.setValueAtTime(0,tm);g.gain.linearRampToValueAtTime(.15,tm+.012);g.gain.exponentialRampToValueAtTime(.0008,tm+.95);o.start(tm);o2.start(tm);o.stop(tm+1);o2.stop(tm+1)}
+function mbPad(fs,tm,dur){for(const f of fs){const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,tm);g.gain.linearRampToValueAtTime(.045,tm+.4);g.gain.setValueAtTime(.045,tm+dur-.5);g.gain.linearRampToValueAtTime(0,tm+dur);o.connect(g);g.connect(bgmGain);o.start(tm);o.stop(tm+dur+.05)}}
+function bgmTick(){if(!bgmOn||!ac)return;const ahead=ac.currentTime+.35;while(bgmNext<ahead){const st=bgmStep%64;if(st%16===0)mbPad(BGM_CH[(st/16)|0],bgmNext,16*BGM_STEP);const f=BGM_MEL[st];if(f)mbNote(f,bgmNext);bgmNext+=BGM_STEP;bgmStep++}}
+function bgmStart(){if(EX.mute||bgmOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();if(!bgmGain){bgmGain=ac.createGain();bgmGain.connect(ac.destination)}bgmGain.gain.value=.5;bgmOn=true;bgmStep=0;bgmNext=ac.currentTime+.1;bgmTimer=setInterval(bgmTick,120);bgmTick()}catch(e){}}
+function bgmStop(){bgmOn=false;if(bgmTimer)clearInterval(bgmTimer);bgmTimer=null;if(bgmGain)bgmGain.gain.value=0}
+addEventListener('pointerdown',()=>bgmStart());addEventListener('keydown',()=>bgmStart());
 function exLoop(t){if(mode!=='explore')return;const dt=Math.min(80,t-(exLast||t));exLast=t;exUpdate(dt);exDraw(t);exRaf=requestAnimationFrame(exLoop)}
 /* --- ui --- */
 function setLeader(c){if(fly)return;order=[c,...order.filter(o=>o!==c)];EX.order=order.slice();saveEx();renderLeaders()}
@@ -788,7 +815,7 @@ function initExplore(){const cv=exCv;
  document.getElementById('svbtn').onclick=()=>{if(fly)return;const L=leader();EX.pos={a:AREA,x:Math.round(L.x),y:Math.round(L.y)};saveEx();sfx('pick');say(['ここまでの ぼうけんを セーブした!','つぎに あそぶときは、この場所から つづけられる。'])};
  document.getElementById('xrst').onclick=()=>{EX.f=newFlags();dlg=null;fly=null;setArea(1);renderDlg();renderNote()};
  document.getElementById('pbtn').onclick=()=>{const p=document.getElementById('pty');p.hidden=!p.hidden;renderParty()};
- const sn=document.getElementById('snd');const sl=()=>{sn.textContent='おと: '+(EX.mute?'OFF':'ON')};sl();sn.onclick=()=>{EX.mute=!EX.mute;saveEx();sl();sfx('pick')};
+ const sn=document.getElementById('snd');const sl=()=>{sn.textContent='おと: '+(EX.mute?'OFF':'ON')};sl();sn.onclick=()=>{EX.mute=!EX.mute;saveEx();sl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
  const K={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1]};
  addEventListener('keydown',e=>{if(mode!=='explore')return;if(K[e.key]){dir[K[e.key][0]]=K[e.key][1];e.preventDefault()}else if(e.key==='Enter'||e.key===' '){interact();e.preventDefault()}});
  addEventListener('keyup',e=>{if(K[e.key]&&dir[K[e.key][0]]===K[e.key][1])dir[K[e.key][0]]=0})}
