@@ -797,7 +797,7 @@ let ac=null;function sfx(kind){if(EX.mute)return;try{ac=ac||new (window.AudioCon
  else if(kind==='gate'){tone(64,.6,'sine',.14,0,46);tone(98,.45,'triangle',.07,.04);nz(.55,'lowpass',260,null,.06,0);seq([[523,.1],[659,.1],[784,.1],[1047,.32]],'triangle',.05)}
  else if(kind==='step'){nz(.07,'lowpass',520,null,.045);tone(135,.05,'sine',.018)}
  else if(kind==='ground'){const v=.9+Math.random()*.2;nz(.09,'lowpass',430*v,null,.06);nz(.05,'bandpass',900*v,700*v,.014,.012);tone(96,.07,'sine',.026)}
- else if(kind==='grass'){const gb=grassBufs?grassBufs.filter(Boolean):[];if(gb.length){const s=ac.createBufferSource();s.buffer=gb[Math.floor(Math.random()*gb.length)];s.playbackRate.value=.93+Math.random()*.14;const g=ac.createGain();g.gain.value=.7;s.connect(g);g.connect(ac._sb);s.start()}else{const v=.9+Math.random()*.22;nz(.3,'bandpass',780*v,430*v,.075,0,.07);nz(.24,'bandpass',480*v,340*v,.045,.05,.09)}}
+ else if(kind==='grass'){const gb=grassBufs?grassBufs.filter(Boolean):[];if(gb.length){const s=ac.createBufferSource();s.buffer=gb[Math.floor(Math.random()*gb.length)];s.playbackRate.value=.93+Math.random()*.14;const g=ac.createGain();g.gain.value=.3;s.connect(g);g.connect(ac._sb);s.start()}else{const v=.9+Math.random()*.22;nz(.3,'bandpass',780*v,430*v,.075,0,.07);nz(.24,'bandpass',480*v,340*v,.045,.05,.09)}}
  else if(kind==='ice'){tone(1900,.06,'sine',.022);nz(.05,'highpass',3200,null,.028)}
  else if(kind==='fly'){nz(.5,'bandpass',480,1650,.06);tone(392,.42,'sine',.018,0,784)}
  else if(kind==='freeze'){seq([[1568,.09],[1319,.09],[1047,.09],[784,.16]],'triangle',.045);nz(.3,'highpass',4200,null,.014,.08)}
