@@ -1,6 +1,6 @@
 // ポケットミステリー Service Worker
 // 公開のたびに PM_VER を上げること（古いキャッシュを破棄して更新を届けるため）
-const PM_VER = 'pm-v12';
+const PM_VER = 'pm-v13';
 const ASSETS = ['./', './index.html', './icon-192.png', './icon-180.png', './icon-512.png', './manifest.json'];
 
 self.addEventListener('install', e => {
@@ -21,7 +21,7 @@ self.addEventListener('fetch', e => {
   if (isPage) {
     // ページはネットワーク優先（更新が届くように）。オフライン時はキャッシュを使う
     e.respondWith(
-      fetch(e.request).then(r => {
+      fetch(e.request,{cache:'no-cache'}).then(r => {
         const cl = r.clone();
         caches.open(PM_VER).then(c => c.put('./index.html', cl));
         return r;
