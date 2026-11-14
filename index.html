@@ -35,6 +35,12 @@ canvas{image-rendering:pixelated;max-width:100%}
 #startBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #b8912e}
 @keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.1)}}
 #titleScr .tnote{color:#8f84b8;font-size:12px;margin-top:10px}
+#titleScr .tslab{color:#b3a6cc;font-size:12px;letter-spacing:.2em;margin-top:16px}
+#slotRow{display:flex;gap:8px;margin-top:7px}
+#slotRow .slotB{font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:8px 14px;cursor:pointer;line-height:1.25}
+#slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc}
+#slotRow .slotB.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
+#slotRow .slotB.on small{color:#ffe89a}
 </style></head><body><div id="titleScr">
 <span class="star" style="top:9%;left:12%;font-size:15px">✦</span><span class="star" style="top:16%;right:14%;font-size:11px;animation-delay:.7s">✦</span><span class="star" style="top:64%;left:8%;font-size:11px;animation-delay:1.3s">✦</span><span class="star" style="top:72%;right:10%;font-size:16px;animation-delay:.4s">✦</span><span class="star" style="top:38%;left:4%;font-size:10px;animation-delay:1.8s">✦</span><span class="star" style="top:30%;right:5%;font-size:10px;animation-delay:2.1s">✦</span>
 <img src="icon-512.png" alt="ポケットミステリー">
@@ -42,6 +48,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tsub">ドット絵の なぞとき たんけんゲーム</div>
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
+<div class="tslab">セーブデータ</div><div id="slotRow"></div>
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div class="w">
@@ -80,7 +87,8 @@ const D={"items":[{"id":"wizard","slot":"head","name":"おれまがりぼうし"
 function animList(c){const base=[['idle','たいき'],['walk','あるく'],['joy','よろこぶ'],['sleep','ねる']];return(c==='kohaku'||c==='astra')?base.concat([['idle_down','まえ'],['idle_up','うしろ']]):base.concat([['idle_side','よこ'],['idle_up','うしろ'],['special','とくべつ']])}
 function vsuf(c,v){if(c==='kohaku'||c==='astra')return v==='up'?'_up':v==='down'?'_down':'';return v==='up'?'_up':v==='side'?'_side':''}
 const OX=2,OY=8,W=28;let mode='dress',ch='ribbon',slot='head',an='idle',fi=0,timer=null;
-const mem={};const st={get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}};
+const mem={};const SLOT=Math.min(3,Math.max(1,parseInt(localStorage.getItem('mv_activeslot')||'1')||1));const SK=k=>SLOT===1?k:k.replace('mv_','mv_s'+SLOT+'_');
+const st={get(k){try{return localStorage.getItem(SK(k))}catch(e){return mem[SK(k)]||null}},set(k,v){try{localStorage.setItem(SK(k),v)}catch(e){mem[SK(k)]=v}}};
 function load(){try{return JSON.parse(st.get('mv_dress1')||'{}')}catch(e){return{}}}
 let S=load();S.cur=S.cur||{};S.slots=S.slots||{};
 function persist(){st.set('mv_dress1',JSON.stringify(S))}
@@ -847,6 +855,11 @@ const roomCv=document.getElementById('room');roomCv.width=RW*2;roomCv.height=RH*
 const exCv=document.getElementById('ex');exCv.width=VW*2;exCv.height=VH*2;initExplore();
 document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 {const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
+ const sr=document.getElementById('slotRow');
+ for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'・ノート'+e.notes.length:'')}}catch(e){}
+  b.innerHTML='データ'+n+'<small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}
+ let auto=false;try{auto=!!sessionStorage.getItem('mv_autostart');sessionStorage.removeItem('mv_autostart')}catch(e){}
+ if(auto){ts.remove()}
  if(EX&&(EX.area>1||(EX.notes&&EX.notes.length)))sb.textContent='▶ つづきから はじめる';
  const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');setTimeout(()=>ts.remove(),600)};
  sb.onclick=e=>{e.stopPropagation();go()};ts.onclick=go}
