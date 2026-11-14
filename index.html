@@ -49,7 +49,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
 <div class="tslab">セーブデータ</div><div id="slotRow"></div>
-<div class="tnote">ぜんぶで 10ステージ ／ おとが でます<br>ver 2026.11.15-1</div>
+<div class="tnote">ぜんぶで 10ステージ ／ おとが でます<br>ver 2026.11.15-2</div>
 </div>
 <div class="w">
 <h1>ポケットミステリー</h1>
@@ -75,7 +75,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="lab" id="goal" style="margin-top:6px;text-align:left"></div>
 <div class="slots" id="lead" style="margin:8px 0"></div>
 <button id="dA" class="abtn">しらべる</button>
-<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button><button id="xrst">さいしょから</button></div>
+<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button></div>
 <div id="pty" hidden style="margin-top:10px"></div>
 <div id="note" hidden style="margin-top:10px"></div>
 <p class="lab" style="margin-top:10px">ゆびでがめんをなぞると、そのほうこうへあるきます。せんとうはありません。リーダーをきりかえて、とくぎをつかいわけよう。進み具合は自動で保存されます。「セーブ」をおすと、いまいる場所も保存されて、つぎはそこからつづけられます。</p>
@@ -844,7 +844,7 @@ function initExplore(){const cv=exCv;
  document.getElementById('dA').onclick=interact;document.getElementById('dlg').onclick=()=>advance();
  document.getElementById('nbtn').onclick=()=>{const n=document.getElementById('note');n.hidden=!n.hidden;if(!n.hidden)renderNote()};
  document.getElementById('svbtn').onclick=()=>{if(fly)return;const L=leader();EX.pos={a:AREA,x:Math.round(L.x),y:Math.round(L.y)};saveEx();sfx('pick');say(['ここまでの ぼうけんを セーブした!','つぎに あそぶときは、この場所から つづけられる。'])};
- document.getElementById('xrst').onclick=()=>{EX.f=newFlags();dlg=null;fly=null;setArea(1);renderDlg();renderNote()};
+ 
  document.getElementById('pbtn').onclick=()=>{const p=document.getElementById('pty');p.hidden=!p.hidden;renderParty()};
  const sn=document.getElementById('snd');const sl=()=>{sn.textContent='おと: '+(EX.mute?'OFF':'ON')};sl();sn.onclick=()=>{EX.mute=!EX.mute;saveEx();sl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
  const K={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1]};
