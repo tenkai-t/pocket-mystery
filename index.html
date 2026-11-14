@@ -21,7 +21,30 @@ canvas{image-rendering:pixelated;max-width:100%}
 .mini{display:flex;gap:6px;margin-top:12px}.mini button{font-size:12px}
 .sv{margin-top:14px;font-size:12px;color:var(--sub)}.row{display:flex;gap:6px;margin-top:6px}.row div{flex:1;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px;text-align:center;font-size:12px}
 .row b{display:block;margin-bottom:4px}.row button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:5px 8px;margin:0 2px}
-.ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ctl button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 4px}.ctl #rflip,.ctl #rdel{grid-column:span 2}.ctl button:disabled{opacity:.4}#dlg{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,250,240,.96);color:#2a1f3d;border:2px solid #2a1f3d;border-radius:12px;padding:10px;font-size:14px;line-height:1.5}#dlg button{display:block;width:100%;margin-top:6px;font:inherit;padding:8px;border:2px solid #d8505e;background:#fff;color:#2a1f3d;border-radius:10px}.dnx{text-align:right;color:#d8505e;font-size:12px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.ptg button{font:inherit;font-size:12px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px}.ptg button.on{background:var(--acc);border-color:var(--acc);color:#fff}.ptg small{font-size:10px;opacity:.85}.abtn{display:block;width:100%;margin:8px 0 0;font:inherit;font-size:16px;color:#fff;background:var(--acc);border:2px solid var(--acc);border-radius:14px;padding:14px 0}.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:300px;margin:0 auto}.pad button{font:inherit;font-size:18px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 0;touch-action:none;user-select:none}.pad #dA{font-size:13px;background:var(--acc);color:#fff;border-color:var(--acc)}.nrow{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px;font-size:12px;line-height:1.5}</style></head><body><div class="w">
+.ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ctl button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 4px}.ctl #rflip,.ctl #rdel{grid-column:span 2}.ctl button:disabled{opacity:.4}#dlg{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,250,240,.96);color:#2a1f3d;border:2px solid #2a1f3d;border-radius:12px;padding:10px;font-size:14px;line-height:1.5}#dlg button{display:block;width:100%;margin-top:6px;font:inherit;padding:8px;border:2px solid #d8505e;background:#fff;color:#2a1f3d;border-radius:10px}.dnx{text-align:right;color:#d8505e;font-size:12px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.ptg button{font:inherit;font-size:12px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px}.ptg button.on{background:var(--acc);border-color:var(--acc);color:#fff}.ptg small{font-size:10px;opacity:.85}.abtn{display:block;width:100%;margin:8px 0 0;font:inherit;font-size:16px;color:#fff;background:var(--acc);border:2px solid var(--acc);border-radius:14px;padding:14px 0}.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:300px;margin:0 auto}.pad button{font:inherit;font-size:18px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 0;touch-action:none;user-select:none}.pad #dA{font-size:13px;background:var(--acc);color:#fff;border-color:var(--acc)}.nrow{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px;font-size:12px;line-height:1.5}
+#titleScr{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;text-align:center;padding:24px 18px;transition:opacity .55s ease;overflow:hidden}
+#titleScr.hide{opacity:0;pointer-events:none}
+#titleScr .star{position:absolute;color:#ffd24a;animation:tw 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes tw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+#titleScr img{width:min(46vw,196px);height:auto;border-radius:22%;box-shadow:0 14px 44px rgba(0,0,0,.55),0 0 0 3px #ffd24a55;animation:floaty 3.6s ease-in-out infinite}
+#titleScr h1{font-size:clamp(30px,8.4vw,44px);margin:6px 0 0;letter-spacing:.06em;color:#fff;text-shadow:0 3px 0 #171238,0 0 22px #8f7ff0aa}
+#titleScr .tsub{color:#b3a6cc;font-size:clamp(13px,3.6vw,16px);letter-spacing:.14em}
+#titleScr .tstars{color:#ffd24a;font-size:15px;letter-spacing:.5em;margin-top:2px}
+#startBtn{margin-top:14px;font:inherit;font-size:20px;font-weight:700;letter-spacing:.08em;color:#241d4d;background:linear-gradient(#ffe89a,#ffd24a);border:3px solid #fff2c4;border-radius:16px;padding:14px 42px;cursor:pointer;box-shadow:0 6px 0 #b8912e,0 12px 26px rgba(0,0,0,.45);animation:pulse 1.8s ease-in-out infinite}
+#startBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #b8912e}
+@keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.1)}}
+#titleScr .tnote{color:#8f84b8;font-size:12px;margin-top:10px}
+</style></head><body><div id="titleScr">
+<span class="star" style="top:9%;left:12%;font-size:15px">✦</span><span class="star" style="top:16%;right:14%;font-size:11px;animation-delay:.7s">✦</span><span class="star" style="top:64%;left:8%;font-size:11px;animation-delay:1.3s">✦</span><span class="star" style="top:72%;right:10%;font-size:16px;animation-delay:.4s">✦</span><span class="star" style="top:38%;left:4%;font-size:10px;animation-delay:1.8s">✦</span><span class="star" style="top:30%;right:5%;font-size:10px;animation-delay:2.1s">✦</span>
+<img src="icon-512.png" alt="ポケットミステリー">
+<h1>ポケットミステリー</h1>
+<div class="tsub">ドット絵の なぞとき たんけんゲーム</div>
+<div class="tstars">★ ★ ★</div>
+<button id="startBtn">▶ はじめる</button>
+<div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
+</div>
+<div class="w">
 <h1>ポケットミステリー</h1>
 <div class="tabs" id="mtabs"><button data-m="dress" class="on">きせかえ</button><button data-m="room">マイルーム</button><button data-m="explore">たんけん</button></div>
 <div id="pg1">
@@ -823,5 +846,9 @@ function initExplore(){const cv=exCv;
 const roomCv=document.getElementById('room');roomCv.width=RW*2;roomCv.height=RH*2;initRoom();
 const exCv=document.getElementById('ex');exCv.width=VW*2;exCv.height=VH*2;initExplore();
 document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+{const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
+ if(EX&&(EX.area>1||(EX.notes&&EX.notes.length)))sb.textContent='▶ つづきから はじめる';
+ const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');setTimeout(()=>ts.remove(),600)};
+ sb.onclick=e=>{e.stopPropagation();go()};ts.onclick=go}
 ui();
 </script></body></html>
