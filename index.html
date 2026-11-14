@@ -617,9 +617,9 @@ function exUpdate(dt){if(fly){stepFly(dt);animChars(dt);return}
   if(Math.abs(L.x-nx)>.01||Math.abs(L.y-ny)>.01){}
   L.moving=(Math.abs(dx)+Math.abs(dy))>0&&(canStand(nx,L.y)||canStand(L.x,ny));if(dx>.1)L.face=1;else if(dx<-.1)L.face=-1;if(L.moving)L.view=Math.abs(dy)>Math.abs(dx)*.7?(dy<0?'up':'down'):'side';
   const last=trail[trail.length-1];if(!last||Math.hypot(last[0]-L.x,last[1]-L.y)>TSTEP){trail.push([L.x,L.y]);if(trail.length>400)trail.shift()}}
- if(L.moving){stepAcc+=dt;const tc=tileAt(Math.floor(L.x/TS),Math.floor(L.y/TS));
-  if(tc!==lastTileC){lastTileC=tc;if(tc===','){sfx('grass');stepAcc=60}}
-  if(stepAcc>=175){stepAcc=0;sfx(tc===','?'grass':tc==='~'?'ice':'step')}}else{stepAcc=130;lastTileC=''}
+ if(L.moving){stepAcc+=dt;const tc=tileAt(Math.floor(L.x/TS),Math.floor(L.y/TS)),grassy=tc===','||tc==='i'||(tc==='.'&&AREA!==2&&AREA!==4);
+  if(tc!==lastTileC){lastTileC=tc;if(grassy){sfx('grass');stepAcc=60}}
+  if(stepAcc>=175){stepAcc=0;sfx(grassy?'grass':tc==='~'?'ice':'step')}}else{stepAcc=130;lastTileC=''}
  order.forEach((c,i)=>{if(i===0)return;const p=P(c);const tr=trail[Math.max(0,trail.length-1-i*FOL)]||[L.x,L.y];const ddx=tr[0]-p.x,ddy=tr[1]-p.y,d=Math.hypot(ddx,ddy);
   if(d>1.2){const k=Math.min(1,dt/90);p.x+=ddx*k;p.y+=ddy*k;p.moving=true;if(Math.abs(ddx)>.4)p.face=ddx>0?1:-1;p.view=Math.abs(ddy)>Math.abs(ddx)*.7?(ddy<0?'up':'down'):'side'}else p.moving=false});
  if(gateOpen()&&tileAt(Math.floor(L.x/TS),Math.floor((L.y-18)/TS))==='G'&&!dlg){
@@ -784,7 +784,7 @@ let ac=null;function sfx(kind){if(EX.mute)return;try{ac=ac||new (window.AudioCon
  else if(kind==='bad')seq([[220,.14],[165,.2]],'square',.04);
  else if(kind==='gate'){tone(64,.6,'sine',.14,0,46);tone(98,.45,'triangle',.07,.04);nz(.55,'lowpass',260,null,.06,0);seq([[523,.1],[659,.1],[784,.1],[1047,.32]],'triangle',.05)}
  else if(kind==='step'){nz(.07,'lowpass',520,null,.045);tone(135,.05,'sine',.018)}
- else if(kind==='grass'){nz(.17,'bandpass',1150,720,.085);nz(.12,'bandpass',1700,950,.045,.04)}
+ else if(kind==='grass'){const v=.88+Math.random()*.28;nz(.16,'bandpass',980*v,540*v,.08);nz(.11,'bandpass',1550*v,880*v,.042,.045);tone(118,.06,'sine',.015)}
  else if(kind==='ice'){tone(1900,.06,'sine',.022);nz(.05,'highpass',3200,null,.028)}
  else if(kind==='fly'){nz(.5,'bandpass',480,1650,.06);tone(392,.42,'sine',.018,0,784)}
  else if(kind==='freeze'){seq([[1568,.09],[1319,.09],[1047,.09],[784,.16]],'triangle',.045);nz(.3,'highpass',4200,null,.014,.08)}
@@ -796,7 +796,7 @@ const BGM_STEP=.34,BGM_MEL=[659,0,784,0,880,0,784,0,659,0,523,0,587,0,659,0,698,
 function mbNote(f,tm){const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),g2=ac.createGain();o.type='sine';o.frequency.value=f;o2.type='sine';o2.frequency.value=f*2;g2.gain.value=.22;o.connect(g);o2.connect(g2);g2.connect(g);g.connect(bgmGain);g.gain.setValueAtTime(0,tm);g.gain.linearRampToValueAtTime(.15,tm+.012);g.gain.exponentialRampToValueAtTime(.0008,tm+.95);o.start(tm);o2.start(tm);o.stop(tm+1);o2.stop(tm+1)}
 function mbPad(fs,tm,dur){for(const f of fs){const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,tm);g.gain.linearRampToValueAtTime(.045,tm+.4);g.gain.setValueAtTime(.045,tm+dur-.5);g.gain.linearRampToValueAtTime(0,tm+dur);o.connect(g);g.connect(bgmGain);o.start(tm);o.stop(tm+dur+.05)}}
 function bgmTick(){if(!bgmOn||!ac)return;const ahead=ac.currentTime+.35;while(bgmNext<ahead){const st=bgmStep%64;if(st%16===0)mbPad(BGM_CH[(st/16)|0],bgmNext,16*BGM_STEP);const f=BGM_MEL[st];if(f)mbNote(f,bgmNext);bgmNext+=BGM_STEP;bgmStep++}}
-function bgmStart(){if(EX.mute||bgmOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();if(!bgmGain){bgmGain=ac.createGain();bgmGain.connect(ac.destination)}bgmGain.gain.value=.5;bgmOn=true;bgmStep=0;bgmNext=ac.currentTime+.1;bgmTimer=setInterval(bgmTick,120);bgmTick()}catch(e){}}
+function bgmStart(){if(EX.mute||bgmOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();if(!bgmGain){bgmGain=ac.createGain();bgmGain.connect(ac.destination)}bgmGain.gain.value=.3;bgmOn=true;bgmStep=0;bgmNext=ac.currentTime+.1;bgmTimer=setInterval(bgmTick,120);bgmTick()}catch(e){}}
 function bgmStop(){bgmOn=false;if(bgmTimer)clearInterval(bgmTimer);bgmTimer=null;if(bgmGain)bgmGain.gain.value=0}
 addEventListener('pointerdown',()=>bgmStart());addEventListener('keydown',()=>bgmStart());
 function exLoop(t){if(mode!=='explore')return;const dt=Math.min(80,t-(exLast||t));exLast=t;exUpdate(dt);exDraw(t);exRaf=requestAnimationFrame(exLoop)}
