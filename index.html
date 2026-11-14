@@ -49,7 +49,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
 <div class="tslab">セーブデータ</div><div id="slotRow"></div>
-<div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
+<div class="tnote">ぜんぶで 10ステージ ／ おとが でます<br>ver 2026.11.15-1</div>
 </div>
 <div class="w">
 <h1>ポケットミステリー</h1>
@@ -864,4 +864,5 @@ document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.da
  const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');setTimeout(()=>ts.remove(),600)};
  sb.onclick=e=>{e.stopPropagation();go()};ts.onclick=go}
 ui();
-</script></body></html>
+</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script></body></html>
