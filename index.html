@@ -461,7 +461,7 @@ tablet6:['磁石の力','磁石にくっつくのは鉄だけ。木や石はく�
 tablet7:['季節の橋のきそく','強い風で空は飛べない。季節の言葉カード12枚を、春・夏・秋・冬の順に橋へはめる。'],fail7:['季節まちがい','その言葉は別の季節みたい。季節の様子を思い出そう。'],key7:['橋の宝箱','季節の橋を完成させて、宝箱がひらいた。'],bridge7:['季節の橋かんせい','春・夏・秋・冬、4つの区間がつながって橋が完成した。'],door7:['橋の門','季節の橋をわたりきると、門がひらいた。'],box7:['カード置き場','持っているカードを預けられる。入れ替えるときに便利。'],
 tablet8:['水の姿','水は冷やすと氷に、温めると水にもどる。姿を変える水のふしぎ。'],freeze:['凍った湖','氷の力で湖が凍り、歩いてわたれるようになった。'],melt:['溶けた氷の壁','炎の力で、厚い氷の壁が溶けて道がひらいた。'],door8:['氷の門','星の実をはめて、氷の門がひらいた。'],
 tablet9:['色のまぜ方','赤と青で紫、青と黄で緑、赤と黄でオレンジ。色は混ぜると新しい色になる。'],mix:['新しい色','色水を2つ混ぜて、新しい色を作った。混ぜ方で色が変わる。'],door9:['にじの泉の門','紫・緑・オレンジの3色がそろい、泉の門がにじ色に光ってひらいた。'],
-tablet10:['地図記号','学校は「文」、郵便局は「〒」、神社は鳥居の形。地図記号は場所の目印。'],stamp:['村のスタンプ','地図記号をたよりに建物を見つけて、スタンプを集めた。'],door10:['村の門','スタンプが3つそろい、最後の記号クイズに答えて村の門がひらいた。']};
+tablet10:['地図記号','小中学校は「文」、郵便局は「〒」、神社は鳥居の形。地図記号は場所の目印。'],stamp:['村のスタンプ','地図記号をたよりに建物を見つけて、スタンプを集めた。'],door10:['村の門','スタンプが3つそろい、最後の記号クイズに答えて村の門がひらいた。']};
 function addNote(id){if(!EX.notes.includes(id))EX.notes.push(id)}
 function addStat(c,s,n){EX.stats[c][s]+=n}
 function bondAll(){for(const c in EX.stats)EX.stats[c].b+=1}
@@ -606,7 +606,7 @@ function hintText(){const f=EX.f;if(AREA===1){if(f.gate)return 'ほしの もん
  if(AREA===7){if(f.door7)return '橋の門が ひらいた。むこうへ いってみよう!';if(!f.read7)return '入口近くの 立て札を、よめる 子と 読もう。';if(f.carry7){const cs=card7(f.carry7).s,fs=[0,1,2,3].find(i=>!sec7Done(i));if(fs!==undefined&&cs>fs)return '『'+card7(f.carry7).w+'』は まだ 先の 季節の カード。入口近くの カード置き場に 預けられるよ。';return '持っている『'+card7(f.carry7).w+'』の カードを、合う 季節の 区間へ はめよう。'}const s7=[0,1,2,3].find(i=>!sec7Done(i));if(s7===undefined)return '北東の 宝箱へ。さいごの もんだいが 待って いる。';return '『'+SEASON7[s7]+'』の 区間を 完成させよう（あと '+(3-sec7Placed(s7))+'枚）。草むらに 隠れた カードも あるよ。'}
   if(AREA===8){if(f.door8)return '湖の門が ひらいた。むこうへ いってみよう!';if(!f.read8)return '入口近くの 石碑を、よめる 子と しらべよう。';if(!f.frz8)return '湖の ほとりの 立て札で、氷の 特技を つかって みよう。';if(!f.fruit8)return '凍った 湖を わたって、小島の 星の 実を 取ろう。';if(!f.melt8)return '北の 氷の 壁を、炎の 特技で 溶かそう。';return '北の 洞の 宝箱に、星の 実を はめよう。'}
  if(AREA===9){if(f.door9)return '泉の門が ひらいた。むこうへ いってみよう!';if(!f.read9)return '入口近くの 石碑を、よめる 子と しらべよう。';if(!f.colR)return '東の 広場で 赤の 色水を さがそう。';if(!f.colB)return '西の 花畑の においを、かげる 子と たどろう。青の 色水が あるかも。';if(!f.colY)return '谷の むこうで 黄の 色水を さがそう。とべる 子と!';const n=(f.mixP?1:0)+(f.mixG?1:0)+(f.mixO?1:0);if(n<3)return '北の 泉で 色水を 2つずつ 混ぜよう。（作った 色 '+n+'/3）';return '3色 そろった。門へ!'}
- if(AREA===10){if(f.door10)return '村の門が ひらいた。むこうへ いってみよう!';if(!f.read10)return '入口近くの 地図看板を、よめる 子と 読もう。';if(!f.stA)return '『文』の 記号の 建物（学校）は 西側だ。探して みよう。';if(!f.stB)return '『〒』の 記号の 建物（郵便局）は 東側だ。';if(!f.stC)return '鳥居の 記号（神社）は 池の 小島。とべる 子と わたろう。';return 'スタンプは そろった。門の 掲示板で 最後の クイズだ。'}
+ if(AREA===10){if(f.door10)return '村の門が ひらいた。むこうへ いってみよう!';if(!f.read10)return '入口近くの 地図看板を、よめる 子と 読もう。';if(!f.stA)return '『文』の 記号の 建物（小中学校）は 西側だ。探して みよう。';if(!f.stB)return '『〒』の 記号の 建物（郵便局）は 東側だ。';if(!f.stC)return '鳥居の 記号（神社）は 池の 小島。とべる 子と わたろう。';return 'スタンプは そろった。門の 掲示板で 最後の クイズだ。'}
  if(f.door2)return 'ひらいた ひかりの とびらへ すすもう!';if(!f.read2)return 'かべの もじを、よむのが とくいな 子と しらべよう。';if(!f.crack)return 'かべの われめが きになる。かぎ分けの とくいな 子で!';if(!f.far)return 'ふかい たにを とべる 子の ちからで こえよう。';return 'とびらの ダイヤルに みずしょうを はめて、かずを あわせよう。'}
 function discover(id,c,stat,n){addNote(id);if(c)addStat(c,stat,n);bondAll();saveEx()}
 function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){say(can(order[0],'hint')?['ひらめき!',hintText()]:['ここには なにも なさそうだ。']);return}const L=order[0],f=EX.f;
@@ -798,12 +798,12 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
      if(f.mixP&&f.mixG&&f.mixO){f.door9=true;discover('door9',null,'',0);for(const c in EX.stats)addStat(c,'c',2);saveEx();sfx('gate');say([nm+'が 生まれた!【はっけん】','紫・緑・オレンジ、3色が そろった!','泉が にじ色に 光り、門が ゆっくり ひらいていく…!'])}
      else{say([nm+'が 生まれた!【はっけん】','泉の 水が '+nm+'に 染まった。','門の パネルが 1つ 光った。（作った 色 '+(+!!f.mixP+ +!!f.mixG+ +!!f.mixO)+'/3）'])}}})});break}
  case'tablet10':if(!can(L,'read'))say(['村の 地図の 看板だ。','よむのが とくいな 子なら わかるかも?']);
-  else if(f.read10)say(['「学校は『文』、郵便局は『〒』、神社は 鳥居の 形」','地図記号を たよりに、建物を 探そう。']);
-  else say(['村の 地図に 記号が 書いて ある。【かんさつ】','「学校の 地図記号は、どれ?」【かせつ】'],['『文』の 形','『〒』の 形','鳥居の 形'],i=>{
-   if(i===0){f.read10=true;discover('tablet10',L,'k',3);sfx('ok');say(['そう! 学校は『文』の 記号。【はっけん】','村の 建物を 記号で 見分けて、スタンプを 集めよう。'])}
-   else{addStat(L,'k',1);saveEx();sfx('bad');say(['…ちがうみたいだ。【じっけん】','『〒』は 郵便局。学校は、学ぶ ことに 関係する 漢字だよ。'])}});break;
- case'bldSchool':if(f.stA)say(['学校だ。','スタンプは もらった。']);
-  else say(['『文』の 記号の 建物… 学校だ!【かんさつ】','先生が スタンプを 押して くれた!【はっけん】'],null,()=>{f.stA=true;discover('stamp',L,'c',2);sfx('pick')});break;
+  else if(f.read10)say(['「小中学校は『文』、郵便局は『〒』、神社は 鳥居の 形」','地図記号を たよりに、建物を 探そう。']);
+  else say(['村の 地図に 記号が 書いて ある。【かんさつ】','「小中学校の 地図記号は、どれ?」【かせつ】'],['『文』の 形','『〒』の 形','鳥居の 形'],i=>{
+   if(i===0){f.read10=true;discover('tablet10',L,'k',3);sfx('ok');say(['そう! 小中学校は『文』の 記号。【はっけん】','村の 建物を 記号で 見分けて、スタンプを 集めよう。'])}
+   else{addStat(L,'k',1);saveEx();sfx('bad');say(['…ちがうみたいだ。【じっけん】','『〒』は 郵便局。小中学校は、学ぶ ことに 関係する 漢字だよ。'])}});break;
+ case'bldSchool':if(f.stA)say(['小中学校だ。','スタンプは もらった。']);
+  else say(['『文』の 記号の 建物… 小中学校だ!【かんさつ】','先生が スタンプを 押して くれた!【はっけん】'],null,()=>{f.stA=true;discover('stamp',L,'c',2);sfx('pick')});break;
  case'bldPost':if(f.stB)say(['郵便局だ。','スタンプは もらった。']);
   else say(['『〒』の 記号の 建物… 郵便局だ!【かんさつ】','局員さんが スタンプを 押して くれた!【はっけん】'],null,()=>{f.stB=true;discover('stamp',L,'c',2);sfx('pick')});break;
  case'bldShrine':if(f.stC&&isleF()){const anyFly=order.some(c=>can(c,'fly'));if(anyFly)say(['神社だ。スタンプは もらった。',order.find(c=>can(c,'fly'))==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだ ここに いる'],i=>{if(i===0)startFly(false)});else say(['神社だ。','岸へ もどるには、とべる 子が パーティに いる 必要が ある。'])}
