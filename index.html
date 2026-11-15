@@ -44,6 +44,14 @@ canvas{image-rendering:pixelated;max-width:100%}
 #slotRow .slotB.on small{color:#ffe89a}
 #stgScr{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
 #stgScr[hidden]{display:none}
+#drawScr{position:fixed;inset:0;z-index:130;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:20px 14px;overflow-y:auto}
+#drawScr[hidden]{display:none}
+#drawCv{background:#fff6e0;border-radius:8px;border:3px solid #7a4f2f;touch-action:none}
+.dcolors{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 2px;max-width:360px}
+.dcol{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.35);padding:0}
+.dcol.on{border-color:#fff;box-shadow:0 0 0 2px #f5d77a}
+.drow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.drow button{padding:8px 14px}
 #stgScr .stgT{font-size:19px;font-weight:700;letter-spacing:.1em;margin-bottom:14px}
 #stgList{display:flex;flex-direction:column;gap:8px;width:min(430px,94vw)}
 .stgB{font:inherit;font-size:15px;font-weight:700;text-align:left;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:9px 14px;cursor:pointer;line-height:1.3}
@@ -70,6 +78,13 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div id="stgScr" hidden><div class="stgT">ステージを えらぶ</div><div id="stgList"></div><button id="stgClose">とじる</button></div>
+<div id="drawScr" hidden><div class="stgT">おえかき</div>
+<div class="drow" style="margin:0 0 8px"><button id="dYoko">よこの絵</button><button id="dTate">たての絵</button></div>
+<canvas id="drawCv" width="240" height="168"></canvas>
+<div class="dcolors" id="dColors"></div>
+<div class="drow"><button id="dThin">ほそい</button><button id="dThick">ふとい</button><button id="dEra">けしゴム</button></div>
+<div class="drow"><button id="dUndo">もどす</button><button id="dClear">ぜんぶけす</button></div>
+<div class="drow"><button id="dSave">かざる</button><button id="dCancel">やめる</button></div></div>
 <div class="w">
 <h1>ポケットミステリー</h1>
 <div class="tabs" id="mtabs"><button data-m="room" class="on">マイルーム</button><button data-m="explore">たんけん</button></div>
@@ -88,7 +103,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="sv">かぐをふやす（タップで追加）</div><div class="grid" id="ftabs" style="margin-top:6px"></div>
 <div class="mini"><button id="rrst">はいちをはじめにもどす</button></div>
 <input type="file" id="photoIn" accept="image/*" hidden>
-<p class="lab" style="margin-top:10px">かぐはドラッグでもうごかせます。「むきをかえる」で4方向に回せます。かべの絵も動かせます。「しゃしん・絵をかざる」で自分の写真や絵も飾れます。配置は自動で保存されます。キャラクターは自分で歩いたり、ベッドで眠ったりします。</p>
+<p class="lab" style="margin-top:10px">かぐはドラッグでもうごかせます。「むきをかえる」で4方向に回せます。かべの絵も動かせます。「しゃしん・絵をかざる」で自分の写真や絵も飾れます。「絵をかく」で描いた絵も飾れます。配置は自動で保存されます。キャラクターは自分で歩いたり、ベッドで眠ったりします。</p>
 </div>
 </div>
 
@@ -195,6 +210,42 @@ function photoSpr(it){const r=it.r||0;const key=it.pid+'_'+r;if(pcache[key])retu
 function photoDims(it){const b=it.o==='p'?{w:72,h:96}:{w:96,h:72};return (it.r||0)%2?{w:b.h,h:b.w}:b}
 function itemSpr(it){return it.t==='photo'?photoSpr(it):furnSpr(it.t,it.r||0)}
 function itemDims(it){return it.t==='photo'?photoDims(it):vDims(it.t,it.r||0)}
+function placePhoto(pid,o){
+ if(room.items.length>=24){delete photos[pid];savePhotos();toast('これいじょうおけません');return false}
+ const probe={id:'',t:'photo',pid,o,r:0,z:'w'},pp=fp(probe);let ok=false;
+ for(let y=0;y<=WGR-pp.h&&!ok;y++)for(let x=0;x<=GC-pp.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t:'photo',pid,o,x,y,r:0,z:'w'});sel=id;ok=true}}
+ if(!ok){delete photos[pid];savePhotos();toast('かべに あきがありません');return false}
+ saveRoom();roomUi();return true}
+const DCOLS=['#333333','#e5484d','#f08a3c','#ffd94a','#4da653','#6aa9e8','#3a5fbf','#8b5fbf','#f28bb4','#8a5a33','#9a9a9a','#ffffff'];
+let dCol=DCOLS[1],dSize=5,dEra=false,dDraw=false,dUndoStack=[],dOri='l',dWired=false;
+function dCtx(){return document.getElementById('drawCv').getContext('2d')}
+function dReset(){const cv=document.getElementById('drawCv');cv.width=dOri==='l'?240:168;cv.height=dOri==='l'?168:240;cv.style.width=dOri==='l'?'min(88vw,340px)':'min(62vw,238px)';const x=dCtx();x.fillStyle='#fff6e0';x.fillRect(0,0,cv.width,cv.height);dUndoStack=[]}
+function dPos(e){const cv=document.getElementById('drawCv');const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]}
+function wireDraw(){
+ const cols=document.getElementById('dColors');
+ DCOLS.forEach((c,i)=>{const b=document.createElement('button');b.className='dcol'+(i===1?' on':'');b.style.background=c;b.onclick=()=>{dCol=c;dEra=false;cols.querySelectorAll('.dcol').forEach(o2=>o2.classList.remove('on'));b.classList.add('on')};cols.appendChild(b)});
+ const cv=document.getElementById('drawCv');
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();dDraw=true;try{cv.setPointerCapture(e.pointerId)}catch(_){}dUndoStack.push(cv.toDataURL());if(dUndoStack.length>20)dUndoStack.shift();const[px,py]=dPos(e);const x=dCtx();x.strokeStyle=dEra?'#fff6e0':dCol;x.fillStyle=x.strokeStyle;x.lineWidth=dSize;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(px,py);x.lineTo(px+.1,py+.1);x.stroke()});
+ cv.addEventListener('pointermove',e=>{if(!dDraw)return;const[px,py]=dPos(e);const x=dCtx();x.lineTo(px,py);x.stroke()});
+ const end=()=>{dDraw=false};
+ cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+ document.getElementById('dThin').onclick=()=>{dSize=3};
+ document.getElementById('dThick').onclick=()=>{dSize=9};
+ document.getElementById('dEra').onclick=()=>{dEra=true};
+ document.getElementById('dYoko').onclick=()=>{if(dOri!=='l'){dOri='l';dReset()}};
+ document.getElementById('dTate').onclick=()=>{if(dOri!=='p'){dOri='p';dReset()}};
+ document.getElementById('dUndo').onclick=()=>{const u=dUndoStack.pop();if(!u)return;const im=new Image();im.onload=()=>{const x=dCtx();x.clearRect(0,0,cv.width,cv.height);x.drawImage(im,0,0)};im.src=u};
+ document.getElementById('dClear').onclick=()=>{dUndoStack.push(cv.toDataURL());const x=dCtx();x.fillStyle='#fff6e0';x.fillRect(0,0,cv.width,cv.height)};
+ document.getElementById('dCancel').onclick=()=>{document.getElementById('drawScr').hidden=true};
+ document.getElementById('dSave').onclick=()=>{
+  for(const k in photos)if(!room.items.some(i=>i.pid===k))delete photos[k];
+  if(Object.keys(photos).length>=12){toast('しゃしんは 12まいまでです');savePhotos();return}
+  let data=cv.toDataURL('image/png');
+  if(data.length>300000)data=cv.toDataURL('image/jpeg',.85);
+  const pid='p'+Date.now().toString(36);photos[pid]=data;savePhotos();
+  if(placePhoto(pid,dOri)){document.getElementById('drawScr').hidden=true;dReset()}};
+}
+function openDraw(){document.getElementById('drawScr').hidden=false;if(!dWired){dWired=true;wireDraw();dReset()}}
 function validItem(i){if(i.r===undefined)return false;if(i.t==='photo'){if(typeof i.pid!=='string'||(i.o!=='l'&&i.o!=='p'))return false}else if(!FUR[i.t])return false;const p=fp(i);if(i.z==='w')return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=WGR;return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=GR}
 function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.items){if(r.items.some(i=>i.r===undefined))for(const i of r.items){i.x*=2;i.y*=2;i.r=i.f?3:0;delete i.f}if(r.items.every(validItem)){r.items=r.items.filter(i=>i.t!=='photo'||photos[i.pid]);return r}}}catch(e){}return defaultRoom()}
 function defaultRoom(){return{n:8,items:[{id:'i1',t:'bookshelf',x:0,y:0,r:0},{id:'i2',t:'lamp',x:4,y:0,r:0},{id:'i3',t:'bed',x:6,y:0,r:0},{id:'i4',t:'plant',x:12,y:0,r:0},{id:'i5',t:'rug',x:4,y:4,r:0},{id:'i6',t:'gaku',x:6,y:1,r:0,z:'w'},{id:'i7',t:'tokei',x:12,y:1,r:0,z:'w'}]}}
@@ -302,6 +353,8 @@ function roomUi(){const pb=document.getElementById('ftabs');pb.innerHTML='';
    if(!ok)toast('あきがありません');saveRoom();roomUi()};pb.appendChild(b)}
  const pb2=document.createElement('button');pb2.className='it';pb2.style.gridColumn='1 / -1';const sp2=document.createElement('span');sp2.textContent='しゃしん・絵を かざる';pb2.appendChild(sp2);
  pb2.onclick=()=>{document.getElementById('photoIn').click()};pb.appendChild(pb2);
+ const pb3=document.createElement('button');pb3.className='it';pb3.style.gridColumn='1 / -1';const sp3=document.createElement('span');sp3.textContent='絵を かく';pb3.appendChild(sp3);
+ pb3.onclick=()=>{openDraw()};pb.appendChild(pb3);
  const it=room.items.find(i=>i.id===sel);document.getElementById('selname').textContent=it?(it.t==='photo'?'しゃしん':FUR[it.t].name)+'をえらんでいます':'ものをタップしてえらぶ';
  document.querySelectorAll('#ctl button').forEach(b=>b.disabled=!it&&b.id!=='rrst')}
 function moveSel(dx,dy){const it=room.items.find(i=>i.id===sel);if(!it)return;if(canPlace(it,it.x+dx,it.y+dy,it.id)){it.x+=dx;it.y+=dy;saveRoom()}else toast('そこにはおけません')}
@@ -326,12 +379,7 @@ function initRoom(){
    let data=cv.toDataURL(f.type==='image/png'?'image/png':'image/jpeg',.82);
    if(data.length>200000)data=cv.toDataURL('image/jpeg',.72);
    if(data.length>300000){toast('がぞうが大きすぎます');return}
-   const pid='p'+Date.now().toString(36);photos[pid]=data;savePhotos();
-   if(room.items.length>=24){delete photos[pid];savePhotos();toast('これいじょうおけません');return}
-   const probe={id:'',t:'photo',pid,o,r:0,z:'w'},pp=fp(probe);let ok=false;
-   for(let y=0;y<=WGR-pp.h&&!ok;y++)for(let x=0;x<=GC-pp.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t:'photo',pid,o,x,y,r:0,z:'w'});sel=id;ok=true}}
-   if(!ok){delete photos[pid];savePhotos();toast('あきがありません')}
-   saveRoom();roomUi()};
+   const pid='p'+Date.now().toString(36);photos[pid]=data;savePhotos();placePhoto(pid,o)};
   im.onerror=()=>{URL.revokeObjectURL(url);toast('よみこめませんでした')};
   im.src=url});
  document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()};
