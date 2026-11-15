@@ -42,6 +42,12 @@ canvas{image-rendering:pixelated;max-width:100%}
 #slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc}
 #slotRow .slotB.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
 #slotRow .slotB.on small{color:#ffe89a}
+#delBtn{font:inherit;font-size:12.5px;color:#f0a0a8;background:transparent;border:2px solid #7a4460;border-radius:12px;padding:7px 14px;cursor:pointer;margin-left:8px}
+#slotRow .slotB.del{border-color:#e0483e}
+#delBox{margin-top:10px;background:#352a6e;border:2px solid #e0483e;border-radius:12px;padding:10px 14px;color:#f4ecff;font-size:14px}
+#delBox button{font:inherit;font-weight:700;border-radius:10px;padding:8px 18px;cursor:pointer;margin:8px 4px 0}
+#delYes{background:#e0483e;color:#fff;border:2px solid #ff8a80}
+#delNo{background:#241d4d;color:#f4ecff;border:2px solid #57498f}
 #tsnd{font:inherit;font-size:13px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:999px;padding:7px 20px;cursor:pointer;margin-top:14px}
 </style></head><body><div id="titleScr">
 <span class="star" style="top:9%;left:12%;font-size:15px">✦</span><span class="star" style="top:16%;right:14%;font-size:11px;animation-delay:.7s">✦</span><span class="star" style="top:64%;left:8%;font-size:11px;animation-delay:1.3s">✦</span><span class="star" style="top:72%;right:10%;font-size:16px;animation-delay:.4s">✦</span><span class="star" style="top:38%;left:4%;font-size:10px;animation-delay:1.8s">✦</span><span class="star" style="top:30%;right:5%;font-size:10px;animation-delay:2.1s">✦</span>
@@ -50,7 +56,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tsub">ドット絵の なぞとき たんけんゲーム</div>
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
-<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button>
+<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button><button id="delBtn">データを消す</button><div id="delBox" hidden><div id="delMsg"></div><button id="delYes">消す</button><button id="delNo">やめる</button></div>
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div class="w">
@@ -894,8 +900,12 @@ setMode('room');
 {const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
  const sr=document.getElementById('slotRow');
  for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'・ノート'+e.notes.length:'')}}catch(e){}
-  b.innerHTML='データ'+n+'<small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}
- const tb=document.getElementById('tsnd');const tlbl=()=>{tb.textContent='おと: '+(EX.mute?'OFF':'ON')};tlbl();
+  b.innerHTML='データ'+n+'<small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(delMode){pendDel=n;document.getElementById('delMsg').textContent='データ'+n+'を 消しますか？（もとには もどせません）';document.getElementById('delBox').hidden=false;return}if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}
+ let delMode=false,pendDel=0;const db2=document.getElementById('delBtn');
+db2.onclick=e=>{e.stopPropagation();delMode=!delMode;pendDel=0;document.getElementById('delBox').hidden=true;db2.textContent=delMode?'消すのを やめる':'データを消す';sr.querySelectorAll('.slotB').forEach(b=>b.classList.toggle('del',delMode))};
+document.getElementById('delNo').onclick=e=>{e.stopPropagation();pendDel=0;document.getElementById('delBox').hidden=true};
+document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}location.reload()};
+const tb=document.getElementById('tsnd');const tlbl=()=>{tb.textContent='おと: '+(EX.mute?'OFF':'ON')};tlbl();
  tb.onclick=e=>{e.stopPropagation();EX.mute=!EX.mute;saveEx();tlbl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
  let auto=false;try{auto=!!sessionStorage.getItem('mv_autostart');sessionStorage.removeItem('mv_autostart')}catch(e){}
  if(auto){ts.remove();window.scrollTo(0,0)}
