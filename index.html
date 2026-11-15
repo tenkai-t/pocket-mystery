@@ -87,7 +87,8 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="ctl" id="ctl"><button id="mL">◀</button><button id="mU">▲</button><button id="mD">▼</button><button id="mR">▶</button><button id="rflip">むきをかえる</button><button id="rdel">かたづける</button></div>
 <div class="sv">かぐをふやす（タップで追加）</div><div class="grid" id="ftabs" style="margin-top:6px"></div>
 <div class="mini"><button id="rrst">はいちをはじめにもどす</button></div>
-<p class="lab" style="margin-top:10px">かぐはドラッグでもうごかせます。「むきをかえる」で4方向に回せます。かべの絵も動かせます。配置は自動で保存されます。キャラクターは自分で歩いたり、ベッドで眠ったりします。</p>
+<input type="file" id="photoIn" accept="image/*" hidden>
+<p class="lab" style="margin-top:10px">かぐはドラッグでもうごかせます。「むきをかえる」で4方向に回せます。かべの絵も動かせます。「しゃしん・絵をかざる」で自分の写真や絵も飾れます。配置は自動で保存されます。キャラクターは自分で歩いたり、ベッドで眠ったりします。</p>
 </div>
 </div>
 
@@ -179,8 +180,23 @@ const big=document.getElementById('big'),small=document.getElementById('small');
 const RW=384,RH=336,CS=48,COLS=8,ROWS=4,FY0=144,SPD=78,FUR=D.furn,GU=24,GC=16,GR=8,WGR=5;
 const FORDER=['bed','bookshelf','lamp','plant','table','rug'];
 const WORDER=['gaku','tokei','poster'];
-function validItem(i){if(!FUR[i.t]||i.r===undefined)return false;const p=fp(i);if(i.z==='w')return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=WGR;return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=GR}
-function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.items){if(r.items.some(i=>i.r===undefined))for(const i of r.items){i.x*=2;i.y*=2;i.r=i.f?3:0;delete i.f}if(r.items.every(validItem))return r}}catch(e){}return defaultRoom()}
+let photos={};try{photos=JSON.parse(st.get('mv_photos1')||'{}')}catch(e){}
+function savePhotos(){try{st.set('mv_photos1',JSON.stringify(photos))}catch(e){}}
+const pimgC={},pcache={};
+function photoImg(pid){if(pimgC[pid])return pimgC[pid];const im=new Image();im.onload=()=>{for(const k in pcache)if(k.startsWith(pid+'_'))delete pcache[k]};im.src=photos[pid]||'';pimgC[pid]=im;return im}
+function photoBase(pid,o){const key=pid+'_b';if(pcache[key])return pcache[key];const W=o==='p'?72:96,H=o==='p'?96:72;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');const px=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(a,b,w,h)};
+ px('#7a4f2f',0,0,W,H);px('#a8744a',3,3,W-6,H-6);px('#d9a441',6,6,W-12,H-12);px('#fff6e0',8,8,W-16,H-16);
+ const im=photoImg(pid);
+ if(im.complete&&im.naturalWidth){const iw=W-16,ih=H-16;const s=Math.max(iw/im.naturalWidth,ih/im.naturalHeight);const dw=im.naturalWidth*s,dh=im.naturalHeight*s;x.save();x.beginPath();x.rect(8,8,iw,ih);x.clip();x.imageSmoothingEnabled=true;x.drawImage(im,8+(iw-dw)/2,8+(ih-dh)/2,dw,dh);x.restore()}
+ else{px('#f5d77a',W/2-2,H/2-8,4,16);px('#f5d77a',W/2-8,H/2-2,16,4)}
+ return pcache[key]={cv}}
+function photoSpr(it){const r=it.r||0;const key=it.pid+'_'+r;if(pcache[key])return pcache[key];const b=photoBase(it.pid,it.o);if(r===0)return pcache[key]={cv:b.cv,w:b.cv.width,h:b.cv.height};
+ const W=b.cv.width,H=b.cv.height;const cv=document.createElement('canvas');cv.width=r%2?H:W;cv.height=r%2?W:H;const x=cv.getContext('2d');x.translate(cv.width/2,cv.height/2);x.rotate(r*Math.PI/2);x.drawImage(b.cv,-W/2,-H/2);return pcache[key]={cv,w:cv.width,h:cv.height}}
+function photoDims(it){const b=it.o==='p'?{w:72,h:96}:{w:96,h:72};return (it.r||0)%2?{w:b.h,h:b.w}:b}
+function itemSpr(it){return it.t==='photo'?photoSpr(it):furnSpr(it.t,it.r||0)}
+function itemDims(it){return it.t==='photo'?photoDims(it):vDims(it.t,it.r||0)}
+function validItem(i){if(i.r===undefined)return false;if(i.t==='photo'){if(typeof i.pid!=='string'||(i.o!=='l'&&i.o!=='p'))return false}else if(!FUR[i.t])return false;const p=fp(i);if(i.z==='w')return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=WGR;return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=GR}
+function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.items){if(r.items.some(i=>i.r===undefined))for(const i of r.items){i.x*=2;i.y*=2;i.r=i.f?3:0;delete i.f}if(r.items.every(validItem)){r.items=r.items.filter(i=>i.t!=='photo'||photos[i.pid]);return r}}}catch(e){}return defaultRoom()}
 function defaultRoom(){return{n:8,items:[{id:'i1',t:'bookshelf',x:0,y:0,r:0},{id:'i2',t:'lamp',x:4,y:0,r:0},{id:'i3',t:'bed',x:6,y:0,r:0},{id:'i4',t:'plant',x:12,y:0,r:0},{id:'i5',t:'rug',x:4,y:4,r:0},{id:'i6',t:'gaku',x:6,y:1,r:0,z:'w'},{id:'i7',t:'tokei',x:12,y:1,r:0,z:'w'}]}}
 let room=loadRoom(),sel=null,raf=null,lastT=0,drag=null,toastT=0,toastMsg='';
 function saveRoom(){st.set('mv_room2',JSON.stringify(room))}
@@ -195,7 +211,7 @@ const ccache={};
 function charSpr(c,an,idx){const e=S.cur[c]||{};const k=c+JSON.stringify(e)+an+idx;if(ccache[k])return ccache[k];if(Object.keys(ccache).length>400)for(const q in ccache)delete ccache[q];
  const G=compose(c,e,an,idx);const AA_=D.chars[c].anims[an],fr=AA_[idx%AA_.length].r;let lr=0;fr.forEach((r,y)=>{if(/[^.]/.test(r))lr=y});const dd=D.chars[c];return ccache[k]={cv:sprFromGrid(G,false),base:lr+(dd.oy!==undefined?dd.oy:OY)+2,cx:(dd.ox!==undefined?dd.ox:OX)+(dd.cxf!==undefined?Math.round(dd.cxf):12)+1}}
 function footBase(c){return charSpr(c,'idle',0).base}
-function fp(it){const m=FUR[it.t];if(it.z==='w'){const v=vDims(it.t,it.r||0);return{w:Math.ceil(v.w/GU),h:Math.ceil(v.h/GU)}}let w=m.fw*2,h=m.fh*2;if(it.r===1||it.r===3){const q=w;w=h;h=q}return{w,h}}
+function fp(it){const m=FUR[it.t];if(it.z==='w'){const v=itemDims(it);return{w:Math.ceil(v.w/GU),h:Math.ceil(v.h/GU)}}let w=m.fw*2,h=m.fh*2;if(it.r===1||it.r===3){const q=w;w=h;h=q}return{w,h}}
 function overlaps(a,b){return a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h}
 function canPlace(it,x,y,ignore){const p=fp(it),wall=it.z==='w';if(x<0||y<0||x+p.w>GC||y+p.h>(wall?WGR:GR))return false;const r={x,y,w:p.w,h:p.h};
  for(const o of room.items){if(o.id===ignore)continue;if((o.z==='w')!==wall)continue;if(!wall&&!!FUR[it.t].rug!==!!FUR[o.t].rug)continue;const op=fp(o);if(overlaps(r,{x:o.x,y:o.y,w:op.w,h:op.h}))return false}return true}
@@ -263,7 +279,7 @@ function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.widt
  if(!bgc)bgc=makeBg();x.drawImage(bgc,0,0);
  if(sel){x.fillStyle='rgba(255,255,255,.16)';for(let j=0;j<GR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,FY0+j*GU,GU,GU);for(let j=0;j<WGR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,j*GU,GU,GU)}
  const list=[];
- for(const it of room.items){if(it.z==='w'){const s=furnSpr(it.t,it.r||0);x.drawImage(s.cv,it.x*GU-1,it.y*GU-1);continue}const m=FUR[it.t],p=fp(it);list.push({k:m.rug?-1:FY0+(it.y+p.h)*GU,f:()=>{const s=furnSpr(it.t,it.r||0);x.drawImage(s.cv,it.x*GU-1,FY0+(it.y+p.h)*GU-s.h-1)}})}
+ for(const it of room.items){if(it.z==='w'){const s=itemSpr(it);x.drawImage(s.cv,it.x*GU-1,it.y*GU-1);continue}const m=FUR[it.t],p=fp(it);list.push({k:m.rug?-1:FY0+(it.y+p.h)*GU,f:()=>{const s=furnSpr(it.t,it.r||0);x.drawImage(s.cv,it.x*GU-1,FY0+(it.y+p.h)*GU-s.h-1)}})}
  for(const o of chars){const sleeping=o.state==='sleep';const A=D.chars[o.c].anims[o.anim];const idxs=o.anim==='sleep'?(D.chars[o.c].sleepIdx||[1,2,3,4,5]):A.map((_,i)=>i);const idx=idxs[o.fi%idxs.length];const an2=o.state==='walk'?o.anim+vsuf(o.c,o.view):o.anim;
   list.push({k:sleeping?o.y+60:o.y,f:()=>{const s=charSpr(o.c,an2,idx);const base=sleeping?s.base:footBase(o.c);
    if(!sleeping){x.fillStyle='rgba(42,31,61,.22)';x.beginPath();x.ellipse(o.x,o.y-1,(D.chars[o.c].w||28)>40?13:9,3,0,0,7);x.fill()}
@@ -273,7 +289,7 @@ function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.widt
  if(toastMsg&&performance.now()<toastT){x.fillStyle='rgba(42,31,61,.85)';x.fillRect(112,10,160,24);x.fillStyle='#fff';x.font='14px sans-serif';x.textAlign='center';x.fillText(toastMsg,192,27)}}
 function toast(m){toastMsg=m;toastT=performance.now()+1800}
 function roomLoop(t){if(mode!=='room')return;const dt=Math.min(100,t-(lastT||t));lastT=t;roomUpdate(dt);roomDraw();raf=requestAnimationFrame(roomLoop)}
-function hit(lx,ly){const hs=[];for(const it of room.items){const v=vDims(it.t,it.r||0);let x0,y0,y1,k;if(it.z==='w'){x0=it.x*GU;y0=it.y*GU;y1=y0+v.h;k=-0.5}else{const p=fp(it);x0=it.x*GU;y1=FY0+(it.y+p.h)*GU;y0=y1-v.h;k=FUR[it.t].rug?-1:y1}if(lx>=x0&&lx<x0+v.w&&ly>=y0&&ly<y1)hs.push({it,k})}hs.sort((a,b)=>b.k-a.k);return hs.length?hs[0].it:null}
+function hit(lx,ly){const hs=[];for(const it of room.items){const v=itemDims(it);let x0,y0,y1,k;if(it.z==='w'){x0=it.x*GU;y0=it.y*GU;y1=y0+v.h;k=-0.5}else{const p=fp(it);x0=it.x*GU;y1=FY0+(it.y+p.h)*GU;y0=y1-v.h;k=FUR[it.t].rug?-1:y1}if(lx>=x0&&lx<x0+v.w&&ly>=y0&&ly<y1)hs.push({it,k})}hs.sort((a,b)=>b.k-a.k);return hs.length?hs[0].it:null}
 function evPos(e){const r=roomCv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*RW,(e.clientY-r.top)/r.height*RH]}
 function roomUi(){const pb=document.getElementById('ftabs');pb.innerHTML='';
  for(const t of FORDER){const m=FUR[t];const b=document.createElement('button');b.className='it';const s=furnSpr(t,0);const cv=document.createElement('canvas');const sc=Math.min(80/s.cv.width,44/s.cv.height);cv.width=Math.round(s.cv.width*sc);cv.height=Math.round(s.cv.height*sc);const c2=cv.getContext('2d');c2.imageSmoothingEnabled=true;c2.drawImage(s.cv,0,0,cv.width,cv.height);b.appendChild(cv);const sp=document.createElement('span');sp.textContent=m.name;b.appendChild(sp);
@@ -284,7 +300,9 @@ function roomUi(){const pb=document.getElementById('ftabs');pb.innerHTML='';
  for(const t of WORDER){const m=FUR[t];const b=document.createElement('button');b.className='it';const s=furnSpr(t,0);const cv=document.createElement('canvas');const sc=Math.min(80/s.cv.width,44/s.cv.height);cv.width=Math.round(s.cv.width*sc);cv.height=Math.round(s.cv.height*sc);const c2=cv.getContext('2d');c2.imageSmoothingEnabled=true;c2.drawImage(s.cv,0,0,cv.width,cv.height);b.appendChild(cv);const sp=document.createElement('span');sp.textContent=m.name;b.appendChild(sp);
   b.onclick=()=>{if(room.items.length>=24){toast('これいじょうおけません');return}const probe={id:'',t,r:0,z:'w'},p=fp(probe);let ok=false;for(let y=0;y<=WGR-p.h&&!ok;y++)for(let x=0;x<=GC-p.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t,x,y,r:0,z:'w'});sel=id;ok=true}}
    if(!ok)toast('あきがありません');saveRoom();roomUi()};pb.appendChild(b)}
- const it=room.items.find(i=>i.id===sel);document.getElementById('selname').textContent=it?FUR[it.t].name+'をえらんでいます':'ものをタップしてえらぶ';
+ const pb2=document.createElement('button');pb2.className='it';pb2.style.gridColumn='1 / -1';const sp2=document.createElement('span');sp2.textContent='しゃしん・絵を かざる';pb2.appendChild(sp2);
+ pb2.onclick=()=>{document.getElementById('photoIn').click()};pb.appendChild(pb2);
+ const it=room.items.find(i=>i.id===sel);document.getElementById('selname').textContent=it?(it.t==='photo'?'しゃしん':FUR[it.t].name)+'をえらんでいます':'ものをタップしてえらぶ';
  document.querySelectorAll('#ctl button').forEach(b=>b.disabled=!it&&b.id!=='rrst')}
 function moveSel(dx,dy){const it=room.items.find(i=>i.id===sel);if(!it)return;if(canPlace(it,it.x+dx,it.y+dy,it.id)){it.x+=dx;it.y+=dy;saveRoom()}else toast('そこにはおけません')}
 function initRoom(){
@@ -295,7 +313,27 @@ function initRoom(){
  const end=()=>{if(drag){drag=null;saveRoom();roomUi()}};rc.addEventListener('pointerup',end);rc.addEventListener('pointercancel',end);
  document.getElementById('mL').onclick=()=>moveSel(-1,0);document.getElementById('mR').onclick=()=>moveSel(1,0);document.getElementById('mU').onclick=()=>moveSel(0,-1);document.getElementById('mD').onclick=()=>moveSel(0,1);
  document.getElementById('rflip').onclick=()=>{const it=room.items.find(i=>i.id===sel);if(!it)return;const orr=it.r||0,ox=it.x,oy=it.y;it.r=(orr+1)%4;const p=fp(it);it.x=Math.max(0,Math.min(it.x,GC-p.w));it.y=Math.max(0,Math.min(it.y,(it.z==='w'?WGR:GR)-p.h));if(canPlace(it,it.x,it.y,it.id))saveRoom();else{it.r=orr;it.x=ox;it.y=oy;toast('そこでは回せません')}roomUi()};
- document.getElementById('rdel').onclick=()=>{const i=room.items.findIndex(i=>i.id===sel);if(i>=0){room.items.splice(i,1);sel=null;saveRoom();roomUi()}};
+ document.getElementById('rdel').onclick=()=>{const i=room.items.findIndex(i=>i.id===sel);if(i>=0){const it=room.items[i];room.items.splice(i,1);if(it.t==='photo'){delete photos[it.pid];delete pimgC[it.pid];for(const k in pcache)if(k.startsWith(it.pid+'_'))delete pcache[k];savePhotos()}sel=null;saveRoom();roomUi()}};
+ document.getElementById('photoIn').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  const url=URL.createObjectURL(f);const im=new Image();
+  im.onload=()=>{URL.revokeObjectURL(url);
+   for(const k in photos)if(!room.items.some(i=>i.pid===k))delete photos[k];
+   if(Object.keys(photos).length>=12){toast('しゃしんは 12まいまでです');savePhotos();return}
+   const o=im.naturalWidth>=im.naturalHeight?'l':'p';
+   const sc=Math.min(1,256/Math.max(im.naturalWidth,im.naturalHeight));
+   const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(im.naturalWidth*sc));cv.height=Math.max(1,Math.round(im.naturalHeight*sc));
+   cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+   let data=cv.toDataURL(f.type==='image/png'?'image/png':'image/jpeg',.82);
+   if(data.length>200000)data=cv.toDataURL('image/jpeg',.72);
+   if(data.length>300000){toast('がぞうが大きすぎます');return}
+   const pid='p'+Date.now().toString(36);photos[pid]=data;savePhotos();
+   if(room.items.length>=24){delete photos[pid];savePhotos();toast('これいじょうおけません');return}
+   const probe={id:'',t:'photo',pid,o,r:0,z:'w'},pp=fp(probe);let ok=false;
+   for(let y=0;y<=WGR-pp.h&&!ok;y++)for(let x=0;x<=GC-pp.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t:'photo',pid,o,x,y,r:0,z:'w'});sel=id;ok=true}}
+   if(!ok){delete photos[pid];savePhotos();toast('あきがありません')}
+   saveRoom();roomUi()};
+  im.onerror=()=>{URL.revokeObjectURL(url);toast('よみこめませんでした')};
+  im.src=url});
  document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()};
  document.getElementById('editToggle').onclick=()=>{const e=document.getElementById('editUI'),b=document.getElementById('editToggle');e.hidden=!e.hidden;b.textContent=e.hidden?'配置を変える':'配置をおわる'}}
 function setMode(m){mode=m;document.getElementById('pg1').hidden=m!=='dress';document.getElementById('pg2').hidden=m!=='room';document.getElementById('pg3').hidden=m!=='explore';
@@ -957,7 +995,7 @@ setMode('room');
  let delMode=false,pendDel=0;const db2=document.getElementById('delBtn');
 db2.onclick=e=>{e.stopPropagation();delMode=!delMode;pendDel=0;document.getElementById('delBox').hidden=true;db2.textContent=delMode?'消すのを やめる':'データを消す';sr.querySelectorAll('.slotB').forEach(b=>b.classList.toggle('del',delMode))};
 document.getElementById('delNo').onclick=e=>{e.stopPropagation();pendDel=0;document.getElementById('delBox').hidden=true};
-document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}location.reload()};
+document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1','mv_photos1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}location.reload()};
 document.getElementById('stgBtnT').onclick=e=>{e.stopPropagation();openStageSel(n=>{doStageJump(n);go()})};
 const tb=document.getElementById('tsnd');const tlbl=()=>{tb.textContent='おと: '+(EX.mute?'OFF':'ON')};tlbl();
  tb.onclick=e=>{e.stopPropagation();EX.mute=!EX.mute;saveEx();tlbl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
