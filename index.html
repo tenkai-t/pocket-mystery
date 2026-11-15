@@ -258,8 +258,6 @@ function makeBg(){const cv=document.createElement('canvas');cv.width=RW;cv.heigh
  px('#a8744a',wx+ww/2-2,wy+2,4,wh-4);px('#a8744a',wx+2,wy+wh/2-2,ww-4,4);px('#c8935f',wx+ww/2-2,wy+2,1,wh-4);px('#7a4f2f',wx-8,wy+wh+2,ww+16,6);px('#c8935f',wx-8,wy+wh+2,ww+16,2);
  for(const [cx0,dir] of [[wx-26,1],[wx+ww+2,-1]]){px('#d8505e',cx0,wy-8,26,wh+16);for(let i=0;i<26;i+=6){px('#a83a48',cx0+i,wy-8,2,wh+16)}px('#ff8a95',cx0,wy-8,26,3);px('#f5d77a',cx0+(dir>0?0:22),wy-8,4,wh+16)}
  px('#a8744a',wx-34,wy-12,ww+68,5);px('#c8935f',wx-34,wy-12,ww+68,2);
- // framed picture + wall star
- px('#2a1f3d',304,28,56,48);px('#c8935f',306,30,52,44);px('#f3e6cf',311,35,42,34);px('#8ec3ea',311,35,42,18);px('#7fc77a',311,53,42,16);px('#ffe066',340,40,8,8);px('#5fbf7a',318,46,10,14);
  return cv}
 function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.width/RW,0,0,cv.width/RW,0,0);x.imageSmoothingEnabled=false;
  if(!bgc)bgc=makeBg();x.drawImage(bgc,0,0);
