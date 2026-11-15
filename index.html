@@ -209,19 +209,19 @@ for(const k in photos)if(typeof photos[k]==='string')photos[k]={d:photos[k],o:nu
 function savePhotos(){try{st.set('mv_photos1',JSON.stringify(photos))}catch(e){}}
 const pimgC={},pcache={};
 function photoImg(pid){if(pimgC[pid])return pimgC[pid];const im=new Image();im.onload=()=>{for(const k in pcache)if(k.startsWith(pid+'_'))delete pcache[k];if(photos[pid]&&!photos[pid].o&&im.naturalWidth){photos[pid].o=im.naturalWidth>=im.naturalHeight?'l':'p';savePhotos()}};im.src=photos[pid]?photos[pid].d:'';pimgC[pid]=im;return im}
-function photoBase(pid,o,s){const key=pid+'_b'+(s||'L');if(pcache[key])return pcache[key];const LG=s!=='S';const W=o==='p'?(LG?72:38):(LG?96:50),H=o==='p'?(LG?96:50):(LG?72:38),IN=LG?8:5;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');const px=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(a,b,w,h)};
+function photoBase(pid,o,s){const key=pid+'_b'+(s||'L');if(pcache[key])return pcache[key];const LG=s!=='S';const W=o==='p'?(LG?72:36):(LG?96:48),H=o==='p'?(LG?96:48):(LG?72:36),IN=LG?8:4;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');const px=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(a,b,w,h)};
  if(LG){px('#7a4f2f',0,0,W,H);px('#a8744a',3,3,W-6,H-6);px('#d9a441',6,6,W-12,H-12);px('#fff6e0',8,8,W-16,H-16)}
- else{px('#7a4f2f',0,0,W,H);px('#a8744a',2,2,W-4,H-4);px('#d9a441',4,4,W-8,H-8);px('#fff6e0',5,5,W-10,H-10)}
+ else{px('#7a4f2f',0,0,W,H);px('#a8744a',2,2,W-4,H-4);px('#d9a441',3,3,W-6,H-6);px('#fff6e0',4,4,W-8,H-8)}
  const im=photoImg(pid);
  if(im.complete&&im.naturalWidth){const iw=W-2*IN,ih=H-2*IN;const sc=Math.max(iw/im.naturalWidth,ih/im.naturalHeight);const dw=im.naturalWidth*sc,dh=im.naturalHeight*sc;x.save();x.beginPath();x.rect(IN,IN,iw,ih);x.clip();x.imageSmoothingEnabled=true;x.drawImage(im,IN+(iw-dw)/2,IN+(ih-dh)/2,dw,dh);x.restore()}
  else{px('#f5d77a',W/2-2,H/2-8,4,16);px('#f5d77a',W/2-8,H/2-2,16,4)}
  return pcache[key]={cv}}
 function photoSpr(it){const r=it.r||0;const key=it.pid+'_'+(it.s||'L')+r;if(pcache[key])return pcache[key];const b=photoBase(it.pid,it.o,it.s);if(r===0)return pcache[key]={cv:b.cv,w:b.cv.width,h:b.cv.height};
  const W=b.cv.width,H=b.cv.height;const cv=document.createElement('canvas');cv.width=r%2?H:W;cv.height=r%2?W:H;const x=cv.getContext('2d');x.translate(cv.width/2,cv.height/2);x.rotate(r*Math.PI/2);x.drawImage(b.cv,-W/2,-H/2);return pcache[key]={cv,w:cv.width,h:cv.height}}
-function photoDims(it){const b=it.s==='S'?(it.o==='p'?{w:38,h:50}:{w:50,h:38}):(it.o==='p'?{w:72,h:96}:{w:96,h:72});return (it.r||0)%2?{w:b.h,h:b.w}:b}
-function gakuSmallSpr(r){const key='gakuS_'+r;if(pcache[key])return pcache[key];const b=furnSpr('gaku',0);const W=r%2?38:50,H=r%2?50:38;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.translate(W/2,H/2);x.rotate(r*Math.PI/2);const bw=r%2?H:W,bh=r%2?W:H;const sc=Math.max(bw/b.cv.width,bh/b.cv.height);x.imageSmoothingEnabled=true;x.drawImage(b.cv,-b.cv.width*sc/2,-b.cv.height*sc/2,b.cv.width*sc,b.cv.height*sc);return pcache[key]={cv,w:W,h:H}}
+function photoDims(it){const b=it.s==='S'?(it.o==='p'?{w:36,h:48}:{w:48,h:36}):(it.o==='p'?{w:72,h:96}:{w:96,h:72});return (it.r||0)%2?{w:b.h,h:b.w}:b}
+function gakuSmallSpr(r){const key='gakuS_'+r;if(pcache[key])return pcache[key];const b=furnSpr('gaku',0);const W=r%2?36:48,H=r%2?48:36;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.translate(W/2,H/2);x.rotate(r*Math.PI/2);const bw=r%2?H:W,bh=r%2?W:H;const sc=Math.max(bw/b.cv.width,bh/b.cv.height);x.imageSmoothingEnabled=true;x.drawImage(b.cv,-b.cv.width*sc/2,-b.cv.height*sc/2,b.cv.width*sc,b.cv.height*sc);return pcache[key]={cv,w:W,h:H}}
 function itemSpr(it){if(it.t==='photo')return photoSpr(it);if(it.t==='gaku'&&it.s==='S')return gakuSmallSpr(it.r||0);return furnSpr(it.t,it.r||0)}
-function itemDims(it){if(it.t==='photo')return photoDims(it);if(it.t==='gaku'&&it.s==='S'){const r=it.r||0;return r%2?{w:38,h:50}:{w:50,h:38}}return vDims(it.t,it.r||0)}
+function itemDims(it){if(it.t==='photo')return photoDims(it);if(it.t==='gaku'&&it.s==='S'){const r=it.r||0;return r%2?{w:36,h:48}:{w:48,h:36}}return vDims(it.t,it.r||0)}
 function scanWall(pr){const p=fp(pr);for(let y=0;y<=WGR-p.h;y++)for(let x=0;x<=GC-p.w;x++){if(canPlace(pr,x,y,null))return{x,y}}return null}
 function placePhotoItem(pid,fresh){
  const o=(photos[pid]&&photos[pid].o)||'l';
@@ -382,7 +382,7 @@ function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.widt
    if(!sleeping){x.fillStyle='rgba(42,31,61,.22)';x.beginPath();x.ellipse(o.x,o.y-1,(D.chars[o.c].w||28)>40?13:9,3,0,0,7);x.fill()}
    const q=cv.width/RW,dy=Math.round(o.y*q-base),X0=Math.round(o.x*q);x.save();x.setTransform(1,0,0,1,0,0);if(o.face<0){x.translate(X0,0);x.scale(-1,1);x.drawImage(s.cv,-s.cx,dy)}else x.drawImage(s.cv,X0-s.cx,dy);x.restore()}})}
  list.sort((a,b)=>a.k-b.k);list.forEach(e=>e.f());
- if(sel){const it=room.items.find(i=>i.id===sel);if(it){const p=fp(it),oy=it.z==='w'?0:FY0;x.strokeStyle='#ffffff';x.lineWidth=1;x.setLineDash([2,2]);x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,p.w*GU-1,p.h*GU-1);x.strokeStyle='#d8505e';x.lineDashOffset=2;x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,p.w*GU-1,p.h*GU-1);x.setLineDash([]);x.lineDashOffset=0}}
+ if(sel){const it=room.items.find(i=>i.id===sel);if(it){const p=fp(it),oy=it.z==='w'?0:FY0,ow=it.z==='w'?itemDims(it).w:p.w*GU,oh=it.z==='w'?itemDims(it).h:p.h*GU;x.strokeStyle='#ffffff';x.lineWidth=1;x.setLineDash([2,2]);x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.strokeStyle='#d8505e';x.lineDashOffset=2;x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.setLineDash([]);x.lineDashOffset=0}}
  if(toastMsg&&performance.now()<toastT){x.fillStyle='rgba(42,31,61,.85)';x.fillRect(112,10,160,24);x.fillStyle='#fff';x.font='14px sans-serif';x.textAlign='center';x.fillText(toastMsg,192,27)}}
 function toast(m){toastMsg=m;toastT=performance.now()+1800}
 function roomLoop(t){if(mode!=='room')return;const dt=Math.min(100,t-(lastT||t));lastT=t;roomUpdate(dt);roomDraw();raf=requestAnimationFrame(roomLoop)}
