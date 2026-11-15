@@ -410,7 +410,10 @@ function advance(){if(!dlg)return false;const last=dlg.i>=dlg.pages.length-1;if(
 /* --- interaction --- */
 function objC(o){return[(o.x+(o.w||1)/2)*TS,o.y*TS+HT]}
 const FACEQ=new Set(['pond','chasm','ledge','sign5','lakeSpot']);
-function nearest(){const L=leader();let best=null,bd=1e9;const fx=L.view==='side'?L.face:0,fy=L.view==='up'?-1:L.view==='down'?1:0,px=L.x,py=L.y-18,qx=px+fx*TS*0.55,qy=py+fy*TS*0.55;for(const o of OBJ){if(!objOn(o))continue;const rx=o.x*TS,ry=o.y*TS,rw=(o.w||1)*TS;const dd=(X,Y)=>Math.hypot(Math.max(rx-X,0,X-(rx+rw)),Math.max(ry-Y,0,Y-(ry+TS)));const d0=dd(px,py),dF=dd(qx,qy);let q;if(FACEQ.has(o.id)){const ftx=Math.floor(L.x/TS)+fx,fty=Math.floor(L.y/TS)+fy;q=(fty===o.y&&ftx>=o.x&&ftx<o.x+(o.w||1))?0.5:1e9}else q=d0===0?0:(dF<=TS*0.25?dF+1:1e9);if(q<bd){bd=q;best=o}}if(!best&&(fx||fy)){const tx=Math.floor(L.x/TS)+fx,ty=Math.floor(L.y/TS)+fy,c=(MAP[ty]&&MAP[ty][tx])||'#';if(c==='~'&&(AREA===1||AREA===5||AREA===10))best={id:'shore',x:tx,y:ty};else if(c==='v'&&(AREA===2||AREA===3||AREA===4||AREA===6||AREA===9))best={id:'cliff',x:tx,y:ty}}return best}
+function nearest(){const L=leader();let best=null,bd=1e9;const fx=L.view==='side'?L.face:0,fy=L.view==='up'?-1:L.view==='down'?1:0,px=L.x,py=L.y-18,qx=px+fx*TS*0.55,qy=py+fy*TS*0.55;for(const o of OBJ){if(!objOn(o))continue;const rx=o.x*TS,ry=o.y*TS,rw=(o.w||1)*TS;const dd=(X,Y)=>Math.hypot(Math.max(rx-X,0,X-(rx+rw)),Math.max(ry-Y,0,Y-(ry+TS)));const d0=dd(px,py),dF=dd(qx,qy);let q;if(FACEQ.has(o.id)){const ftx=Math.floor(L.x/TS)+fx,fty=Math.floor(L.y/TS)+fy;q=(fty===o.y&&ftx>=o.x&&ftx<o.x+(o.w||1))?0.5:1e9}else q=d0===0?0:(dF<=TS*0.25?dF+1:1e9);if(q<bd){bd=q;best=o}}if(!best&&(fx||fy)){const tx=Math.floor(L.x/TS)+fx,ty=Math.floor(L.y/TS)+fy,c=(MAP[ty]&&MAP[ty][tx])||'#';const isW=c==='~'&&(AREA===1||AREA===5||AREA===10),isV=c==='v'&&(AREA===2||AREA===3||AREA===4||AREA===6||AREA===9);
+if(isW||isV){const gap=fy>0?ty*TS-L.y:fy<0?(L.y-FHt)-(ty+1)*TS:fx>0?tx*TS-(L.x+FB):(L.x-FB)-(tx+1)*TS;
+if(gap<=6){let sx=tx,sy=ty,hit=null;while(true){sx+=fx;sy+=fy;if(sx<0||sy<0||sx>=MW||sy>=MH)break;const cc=MAP[sy][sx];if(cc===c)continue;hit=[sx,sy,cc];break}
+if(hit&&(isW&&!isleF()?hit[2]==='i':hit[2]!=='#')){const dxp=hit[0]*TS+HT,dyp=hit[1]*TS+FT;best={id:isW?'shore':'cliff',x:tx,y:ty,dest:canStand(dxp,dyp)?[dxp,dyp]:null}}}}}return best}
 function objOn(o){const f=EX.f;if(o.id==='fragP'&&f.pink)return false;if(o.id==='fragY'&&f.yellow&&!f.island)return false;if(o.id==='keyc'&&f.key)return false;if(o.id==='chasm'&&farF())return false;if(o.id==='ledge'&&!farF())return false;if(o.id==='stone3'&&f.st3)return false;if(o.id==='bat'&&f.bat)return false;if(o.id==='bulbB'&&f.bulbB)return false;if(o.id==='bulb'&&f.bulb)return false;if(o.id==='colR'&&f.colR)return false;if(o.id==='colY'&&f.colY)return false;if(o.id==='iceWall'&&f.melt8)return false;if(o.id==='iceFlower'&&f.fruit8)return false;if(o.id==='sandSpot'&&f.mag)return false;return true}
 function hintText(){const f=EX.f;if(AREA===1){if(f.gate)return 'ほしの もんが ひらいた。むこうへ いってみよう!';if(!f.blue)return 'ほそい 道の さきに いしぶみが ある。よむのが とくいな 子と いってみよう。';if(!f.pink)return 'ひだりの しげみが きになる。かぎ分けの とくいな 子が いると いいな。';if(!f.yellow)return 'いけの まんなかに ひかる ものが あった。とべる 子の ちからで!';return 'うえの 3つの だいざに、ひかる かけらを じゅんばんに ならべよう。'}
  if(AREA===3){if(f.door3)return '丘の門が ひらいた。むこうへ いってみよう!';if(!f.read3)return '入口近くの 石碑を、よめる 子と しらべよう。';const n=(f.st1?1:0)+(f.st2?1:0)+(f.st3?1:0);if(n<3)return 'においの する 場所と、谷の むこうで、石を あと '+(3-n)+'つ さがそう。';if(!f.cmp)return '丘の まんなかの てんびんで、石を 2つずつ くらべよう。';return 'てんびんで くらべた 結果を 思いうかべて、いちばん重い 石を 谷の むこうの 台に のせよう。'}
@@ -437,12 +440,12 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
  case'pond':if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['ここから もどるには とべる 子の ちからが いる。'])}
   else if(!can(L,'fly'))say(['いけの まんなかに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
   else say(['いけの なかじまに きらりと ひかる ものが ある。【かんさつ】',flyLine(false)],null,()=>startFly(true));break;
- case'shore':if(isleF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['岸へ もどるには とべる 子の ちからが いる。'])}
+ case'shore':if(isleF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false,o.dest)});else say(['岸へ もどるには とべる 子の ちからが いる。'])}
   else if(!can(L,'fly'))say(['いけの むこうに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
-  else say(['いけの むこうに きらりと ひかる ものが ある。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break;
- case'cliff':if(farF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。'])}
+  else say(['いけの むこうに きらりと ひかる ものが ある。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true,o.dest));break;
+ case'cliff':if(farF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false,o.dest)});else say(['もどるには とべる 子の ちからが いる。'])}
   else if(!can(L,'fly'))say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
-  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break;
+  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true,o.dest));break;
  case'fragY':if(isleF()&&!f.yellow){f.yellow=true;discover('yellow',L,'c',3);sfx('pick');say(['ひるの かけらを てにいれた!','まぶしい きいろに かがやいている。'])}
   else if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['きしへ もどるには とべる 子の ちからが いる。'])}break;
  case'ped0':case'ped1':case'ped2':{const i=+o.id[3];const bag=['pink','yellow','blue'].filter(c=>f[c]&&!f.pl.includes(c));
@@ -625,8 +628,8 @@ function checkPed(){const f=EX.f;if(f.pl.some(x=>!x))return;const want=['pink','
 function checkBoard(){const f=EX.f;if(f.bl.some(x=>!x))return;const want=['bat','wire','bulb'];
  if(want.every(k=>f.bl.includes(k))){f.door4=true;discover('door4',null,'',0);sfx('gate');for(const c in EX.stats)addStat(c,'c',2);saveEx();say(['でんきゅうが ぱっと 明るく 光った!【はっけん】','回路の 輪が つながり、回廊の門が ひらいていく…!'])}
  else{f.bl=[null,null,null];addStat(order[0],'k',1);addNote('fail4');saveEx();sfx('bad');say(['…でんきゅうは つかない。【じっけん】','部品は 手元に もどった。',f.bulbB&&!f.bulb?'われた 電球では 光らないかも。本物の 電球を さがそう。':'電池・導線・豆電球の 3つが そろって いるか 見なおそう。'])}}
-function startFly(to){sfx('fly');fly={t:0,to,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
-function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[AREA],tg=fly.to?AR.to:AR.back;
+function startFly(to,dest){sfx('fly');fly={t:0,to,dest:dest||null,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
+function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[AREA],tg=fly.dest||(fly.to?AR.to:AR.back);
  order.forEach((c,i)=>{const p=P(c),fr=fly.from[party.indexOf(p)];const ox=(i-1)*28;p.x=fr[0]+(tg[0]+ox-fr[0])*u;p.y=fr[1]+(tg[1]-fr[1])*u;p.moving=true;p.an='walk'});
  if(u>=1){if(AREA===1)EX.f.island=fly.to;else if(AREA===5||AREA===10)EX.f['isle'+AREA]=fly.to;else{EX.f['far'+AREA]=fly.to;if(AREA===2){EX.f.far=fly.to;if(fly.to)addNote('far')}}fly=null;sfx('ok');trail=[];for(let i=0;i<40;i++)trail.push([leader().x,leader().y]);saveEx()}}
 /* --- update --- */
