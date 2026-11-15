@@ -201,7 +201,7 @@ function ui(){const ct=document.getElementById('ctabs');ct.innerHTML='';for(cons
  if(mode==='dress')loop()}
 const big=document.getElementById('big'),small=document.getElementById('small');
 /* ===== マイルーム ===== */
-const RW=384,RH=336,CS=48,COLS=8,ROWS=4,FY0=144,SPD=78,FUR=D.furn,GU=24,GC=16,GR=8,WGR=5,WINX=144,WINW=96,WINH=104;
+const RW=384,RH=336,CS=48,COLS=8,ROWS=4,FY0=144,SPD=78,FUR=D.furn,GU=24,GC=16,GR=8,WGR=5,WINX=148,WINW=88,WINH=104;
 const FORDER=['bed','bookshelf','lamp','plant','table','rug'];
 const WORDER=['gaku','tokei','poster'];
 let photos={};try{photos=JSON.parse(st.get('mv_photos1')||'{}')}catch(e){}
@@ -222,15 +222,16 @@ function photoDims(it){const b=it.s==='S'?(it.o==='p'?{w:38,h:50}:{w:50,h:38}):(
 function gakuSmallSpr(r){const key='gakuS_'+r;if(pcache[key])return pcache[key];const b=furnSpr('gaku',0);const W=r%2?38:50,H=r%2?50:38;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.translate(W/2,H/2);x.rotate(r*Math.PI/2);const bw=r%2?H:W,bh=r%2?W:H;const sc=Math.max(bw/b.cv.width,bh/b.cv.height);x.imageSmoothingEnabled=true;x.drawImage(b.cv,-b.cv.width*sc/2,-b.cv.height*sc/2,b.cv.width*sc,b.cv.height*sc);return pcache[key]={cv,w:W,h:H}}
 function itemSpr(it){if(it.t==='photo')return photoSpr(it);if(it.t==='gaku'&&it.s==='S')return gakuSmallSpr(it.r||0);return furnSpr(it.t,it.r||0)}
 function itemDims(it){if(it.t==='photo')return photoDims(it);if(it.t==='gaku'&&it.s==='S'){const r=it.r||0;return r%2?{w:38,h:50}:{w:50,h:38}}return vDims(it.t,it.r||0)}
+function scanWall(pr){const p=fp(pr);for(let y=0;y<=WGR-p.h;y++)for(let x=0;x<=GC-p.w;x++){if(canPlace(pr,x,y,null))return{x,y}}return null}
 function placePhotoItem(pid,fresh){
  const o=(photos[pid]&&photos[pid].o)||'l';
  if(room.items.length>=24){if(fresh){delete photos[pid];savePhotos()}toast('これいじょうおけません');return false}
- const probe={id:'',t:'photo',pid,o,r:0,z:'w'},pp=fp(probe);let ok=false;
- for(let y=0;y<=WGR-pp.h&&!ok;y++)for(let x=0;x<=GC-pp.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t:'photo',pid,o,x,y,r:0,z:'w'});sel=id;ok=true}}
- if(!ok){if(fresh){delete photos[pid];savePhotos()}toast('かべに あきがありません');return false}
- saveRoom();roomUi();return true}
-function addWallFurn(t){if(room.items.length>=24){toast('これいじょうおけません');return}const probe={id:'',t,r:0,z:'w'},p=fp(probe);let ok=false;for(let y=0;y<=WGR-p.h&&!ok;y++)for(let x=0;x<=GC-p.w&&!ok;x++){if(canPlace(probe,x,y,null)){room.n++;const id='i'+room.n;room.items.push({id,t,x,y,r:0,z:'w'});sel=id;ok=true}}
- if(!ok)toast('あきがありません');saveRoom();roomUi()}
+ let at=scanWall({id:'',t:'photo',pid,o,r:0,z:'w'}),sz=null;
+ if(!at){at=scanWall({id:'',t:'photo',pid,o,s:'S',r:0,z:'w'});sz='S'}
+ if(!at){if(fresh){delete photos[pid];savePhotos()}toast('かべに あきがありません');return false}
+ room.n++;const id='i'+room.n;const it={id,t:'photo',pid,o,x:at.x,y:at.y,r:0,z:'w'};if(sz)it.s=sz;room.items.push(it);sel=id;
+ saveRoom();roomUi();if(sz)toast('小さいサイズで かざりました');return true}
+function addWallFurn(t){if(room.items.length>=24){toast('これいじょうおけません');return}let at=scanWall({id:'',t,r:0,z:'w'}),sz=null;if(!at&&t==='gaku'){at=scanWall({id:'',t,s:'S',r:0,z:'w'});sz='S'}if(!at){toast('あきがありません')}else{room.n++;const id='i'+room.n;const it={id,t,x:at.x,y:at.y,r:0,z:'w'};if(sz)it.s=sz;room.items.push(it);sel=id;if(sz)toast('小さいサイズで かざりました')}saveRoom();roomUi()}
 let picWired=false;
 function openPicPicker(){
  const ov=document.getElementById('picScr');ov.hidden=false;
@@ -362,7 +363,7 @@ function makeBg(){const cv=document.createElement('canvas');cv.width=RW;cv.heigh
   for(let i=0;i<=COLS;i++){px('#b88c58',i*CS+((j%2)?24:0),FY0+j*CS,2,CS-2)}
   for(let k=0;k<70;k++){const gx=Math.floor(hsh(j,k,3)*RW),gy=FY0+j*CS+4+Math.floor(hsh(k,j,5)*(CS-8));px(hsh(k,j,7)<.5?'#c79a64':'#e3bd86',gx,gy,6+Math.floor(hsh(k,j,9)*10),1)}}
  // window with curtains
- const wx=156,wy=12,ww=72,wh=84;
+ const wx=156,wy=12,ww=72,wh=72;
  px('#2a1f3d',wx-4,wy-4,ww+8,wh+8);px('#a8744a',wx-2,wy-2,ww+4,wh+4);
  for(let j=0;j<wh-4;j++){const t=j/(wh-4);const c=t<.4?'#27386f':t<.75?'#2b3a67':'#3a4d86';px(c,wx+2,wy+2+j,ww-4,1)}
  for(let k=0;k<22;k++){const sx=wx+6+Math.floor(hsh(k,1,2)*(ww-14)),sy=wy+6+Math.floor(hsh(k,2,2)*(wh-30));px('#f5d77a',sx,sy,1,1);if(k%4===0){px('#f5d77a',sx-1,sy,3,1);px('#f5d77a',sx,sy-1,1,3)}}
