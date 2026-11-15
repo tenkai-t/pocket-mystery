@@ -405,7 +405,7 @@ function renderDlg(){const d=document.getElementById('dlg');if(!dlg){d.hidden=tr
 function advance(){if(!dlg)return false;const last=dlg.i>=dlg.pages.length-1;if(last&&dlg.choices)return true;if(!last){dlg.i++;renderDlg();return true}const cb=dlg.cb;dlg=null;renderDlg();cb&&cb(0);return true}
 /* --- interaction --- */
 function objC(o){return[(o.x+(o.w||1)/2)*TS,o.y*TS+HT]}
-function nearest(){const L=leader();let best=null,bd=1e9;const fx=L.view==='side'?L.face:0,fy=L.view==='up'?-1:L.view==='down'?1:0,px=L.x,py=L.y-18,qx=px+fx*TS*0.55,qy=py+fy*TS*0.55;for(const o of OBJ){if(!objOn(o))continue;const rx=o.x*TS,ry=o.y*TS,rw=(o.w||1)*TS;const dd=(X,Y)=>Math.hypot(Math.max(rx-X,0,X-(rx+rw)),Math.max(ry-Y,0,Y-(ry+TS)));const d0=dd(px,py),dF=dd(qx,qy);const q=d0===0?0:(dF<=TS*0.25?dF+1:1e9);if(q<bd){bd=q;best=o}}return best}
+function nearest(){const L=leader();let best=null,bd=1e9;const fx=L.view==='side'?L.face:0,fy=L.view==='up'?-1:L.view==='down'?1:0,px=L.x,py=L.y-18,qx=px+fx*TS*0.55,qy=py+fy*TS*0.55;for(const o of OBJ){if(!objOn(o))continue;const rx=o.x*TS,ry=o.y*TS,rw=(o.w||1)*TS;const dd=(X,Y)=>Math.hypot(Math.max(rx-X,0,X-(rx+rw)),Math.max(ry-Y,0,Y-(ry+TS)));const d0=dd(px,py),dF=dd(qx,qy);const q=d0===0?0:(dF<=TS*0.25?dF+1:1e9);if(q<bd){bd=q;best=o}}if(!best&&(fx||fy)){const tx=Math.floor(L.x/TS)+fx,ty=Math.floor(L.y/TS)+fy,c=(MAP[ty]&&MAP[ty][tx])||'#';if(c==='~'&&(AREA===1||AREA===5||AREA===10))best={id:'shore',x:tx,y:ty};else if(c==='v'&&(AREA===2||AREA===3||AREA===4||AREA===6||AREA===9))best={id:'cliff',x:tx,y:ty}}return best}
 function objOn(o){const f=EX.f;if(o.id==='fragP'&&f.pink)return false;if(o.id==='fragY'&&f.yellow&&!f.island)return false;if(o.id==='keyc'&&f.key)return false;if(o.id==='chasm'&&farF())return false;if(o.id==='ledge'&&!farF())return false;if(o.id==='stone3'&&f.st3)return false;if(o.id==='bat'&&f.bat)return false;if(o.id==='bulbB'&&f.bulbB)return false;if(o.id==='bulb'&&f.bulb)return false;if(o.id==='colR'&&f.colR)return false;if(o.id==='colY'&&f.colY)return false;if(o.id==='iceWall'&&f.melt8)return false;if(o.id==='iceFlower'&&f.fruit8)return false;if(o.id==='sandSpot'&&f.mag)return false;return true}
 function hintText(){const f=EX.f;if(AREA===1){if(f.gate)return 'ほしの もんが ひらいた。むこうへ いってみよう!';if(!f.blue)return 'ほそい 道の さきに いしぶみが ある。よむのが とくいな 子と いってみよう。';if(!f.pink)return 'ひだりの しげみが きになる。かぎ分けの とくいな 子が いると いいな。';if(!f.yellow)return 'いけの まんなかに ひかる ものが あった。とべる 子の ちからで!';return 'うえの 3つの だいざに、ひかる かけらを じゅんばんに ならべよう。'}
  if(AREA===3){if(f.door3)return '丘の門が ひらいた。むこうへ いってみよう!';if(!f.read3)return '入口近くの 石碑を、よめる 子と しらべよう。';const n=(f.st1?1:0)+(f.st2?1:0)+(f.st3?1:0);if(n<3)return 'においの する 場所と、谷の むこうで、石を あと '+(3-n)+'つ さがそう。';if(!f.cmp)return '丘の まんなかの てんびんで、石を 2つずつ くらべよう。';return 'てんびんで くらべた 結果を 思いうかべて、いちばん重い 石を 谷の むこうの 台に のせよう。'}
@@ -429,11 +429,20 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   else if(!can(L,'sniff'))say(['こんもりした しげみだ。','おくに なにか ありそうな…。はなの きく 子なら わかるかも?']);
   else say(['くんくん…。しげみの おくから あまい においが する!【かんさつ】','かきわけると、かくれた みちが あらわれた!【はっけん】'],null,()=>{f.bush=true;discover('bush',L,'k',2);sfx('ok')});break;
  case'fragP':f.pink=true;discover('pink',L,'c',1);sfx('pick');say(['あけぼのの かけらを みつけた!','ほんのり ピンクに ひかっている。']);break;
- case'pond':if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['ここから もどるには とべる 子の ちからが いる。'])}
-  else if(!can(L,'fly'))say(['いけの まんなかに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
-  else say(['いけの なかじまに きらりと ひかる ものが ある。【かんさつ】',flyLine(false)],null,()=>startFly(true));break;
+ case'pond':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
+  if(isleF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['ここから もどるには とべる 子の ちからが いる。'])}
+  else if(!af)say(['いけの まんなかに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
+  else say(['いけの なかじまに きらりと ひかる ものが ある。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
+ case'shore':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
+  if(isleF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['岸へ もどるには、とべる 子が パーティに いる 必要が ある。'])}
+  else if(!af)say(['いけの むこうに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
+  else say(['いけの むこうに きらりと ひかる ものが ある。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
+ case'cliff':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
+  if(farF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。'])}
+  else if(!af)say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
+  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
  case'fragY':if(isleF()&&!f.yellow){f.yellow=true;discover('yellow',L,'c',3);sfx('pick');say(['ひるの かけらを てにいれた!','まぶしい きいろに かがやいている。'])}
-  else if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['きしへ もどるには とべる 子の ちからが いる。'])}break;
+  else if(isleF()){const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['きしへ もどるには とべる 子の ちからが いる。'])}break;
  case'ped0':case'ped1':case'ped2':{const i=+o.id[3];const bag=['pink','yellow','blue'].filter(c=>f[c]&&!f.pl.includes(c));
   if(f.pl[i]){say([PNAME[f.pl[i]]+'が はまっている。'],['はずす','そのまま'],k=>{if(k===0){f.pl[i]=null;saveEx()}})}
   else if(!bag.length)say(['まるい くぼみの ある だいざ。','ひかる かけらを はめられそうだ。']);
@@ -447,9 +456,8 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   else if(!can(L,'sniff'))say(['かべに ほそい われめが ある。','おくから かすかな においが するような…。はなの きく 子なら わかるかも?']);
   else say(['くんくん…。かべの われめの おくに つめたい においが する!【かんさつ】','かべが くずれ、かくれた くぼみが あらわれた!【はっけん】'],null,()=>{f.crack=true;discover('crack',L,'k',2);sfx('ok')});break;
  case'keyc':f.key=true;discover('key',L,'c',1);sfx('pick');say(['みずしょうの かぎを みつけた!','つめたく すんだ みずいろに ひかっている。']);break;
- case'chasm':if(!can(L,'fly'))say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
-  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',flyLine(false)],null,()=>startFly(true));break;
- case'ledge':if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。']);break;
+ case'chasm':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(!af)say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
+ case'ledge':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。']);break}
  case'dial':if(f.door2)say(['ダイヤルは 16を さしている。とびらは ひらいた。']);
   else if(!f.key)say(['かべの まるい ダイヤル。まんなかに かぎの くぼみが ある。','みずしょうの かぎが ひつようみたいだ。']);
   else say(['みずしょうの かぎを はめると、ダイヤルが ひかった。【かんさつ】','かずを あわせよう。いくつに する?【かせつ】'],['12','16','20'],i=>{
