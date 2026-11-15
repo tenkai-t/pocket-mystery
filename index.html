@@ -423,7 +423,7 @@ b.innerHTML='ステージ'+n+' '+AREAS[n].name+'<small>'+(cl?'★ クリアず�
 b.disabled=!ok||(cur&&!cl);if(cl)b.classList.add('clr');b.onclick=()=>{ov.hidden=true;const f=stgCb;stgCb=null;if(f)f(n);else doStageJump(n)};ls.appendChild(b)}
 ov.hidden=false}
 document.getElementById('stgClose').onclick=()=>{document.getElementById('stgScr').hidden=true;stgCb=null};
-function setArea(n){AREA=n;EX.area=n;EX.max=Math.max(EX.max||1,n);EX.pos=null;MAP=AREAS[n].build();OBJ=AREAS[n].objs;mapCv=null;resetPos();saveEx();renderLeaders()}
+function setArea(n){AREA=n;EX.area=n;EX.max=Math.max(EX.max||1,n);EX.pos=null;MAP=AREAS[n].build();for(let ry=1;ry<MH-1;ry++)if(MAP[ry][10]==='='&&(MAP[ry][9]==='.'||MAP[ry][9]===','))MAP[ry][9]='=';OBJ=AREAS[n].objs;mapCv=null;resetPos();saveEx();renderLeaders()}
 function tileAt(tx,ty){return(tx<0||ty<0||tx>=MW||ty>=MH)?'#':MAP[ty][tx]}
 function solidAt(px,py){const tx=Math.floor(px/TS),ty=Math.floor(py/TS);const t=tileAt(tx,ty);
  if(t==='#')return true;if(t==='~'&&!(AREA===8&&EX.f.frz8)&&!(AREA===7&&tx>=9&&tx<=11&&ty>=7&&ty<=10&&sec7Done(10-ty)))return true;if(t==='v')return true;const bOpen=AREA===1?EX.f.bush:AREA===2?EX.f.crack:AREA===8?EX.f.melt8:false;if(t==='b'&&!bOpen)return true;if(t==='G')return !gateOpen();
