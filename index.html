@@ -80,7 +80,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="lab" id="goal" style="margin-top:6px;text-align:left"></div>
 <div class="slots" id="lead" style="margin:8px 0"></div>
 <button id="dA" class="abtn">しらべる</button>
-<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button></div>
+<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button></div> <div class="mini" style="margin-top:6px"><button id="tbtn">タイトル画面に もどる</button></div>
 <div id="pty" hidden style="margin-top:10px"></div>
 <div id="note" hidden style="margin-top:10px"></div>
 <p class="lab" style="margin-top:10px">ゆびでがめんをなぞると、そのほうこうへあるきます。せんとうはありません。リーダーをきりかえて、とくぎをつかいわけよう。進み具合は自動で保存されます。「セーブ」をおすと、いまいる場所も保存されて、つぎはそこからつづけられます。</p>
@@ -335,9 +335,9 @@ function buildMap4(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));for
  M[0][9]='G';M[0][10]='G';for(let x=1;x<=18;x++){M[7][x]='v';M[8][x]='v'}
  [[3,3],[16,3],[6,6],[13,6],[2,14],[17,15],[7,11],[14,11]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]='#'});
  [[5,4],[15,5],[4,15],[12,13],[8,5],[16,10]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]=','});
- for(let y=1;y<=16;y++){if(y!==7&&y!==8&&!(y>=2&&y<=5)&&(M[y][10]==='.'||M[y][10]===','))M[y][10]='='}
+ for(let y=1;y<=16;y++){if(y!==7&&y!==8&&!(y>=2&&y<=5)){if(M[y][10]==='.'||M[y][10]===',')M[y][10]='=';if(M[y][9]==='.'||M[y][9]===',')M[y][9]='='}}
  return M}
-const OBJ4=[{id:'tablet4',x:5,y:13,solid:true},{id:'bat',x:15,y:14},{id:'wireSpot',x:3,y:11},{id:'chasm',x:10,y:9},{id:'ledge',x:10,y:6},{id:'bulbB',x:13,y:4},{id:'bulb',x:16,y:5},{id:'slot0',x:7,y:2},{id:'slot1',x:14,y:3},{id:'slot2',x:11,y:5},{id:'gate',x:9,y:0,w:2}];
+const OBJ4=[{id:'tablet4',x:5,y:13,solid:true},{id:'bat',x:15,y:14},{id:'wireSpot',x:3,y:11},{id:'chasm',x:10,y:9},{id:'ledge',x:10,y:6},{id:'bulbB',x:13,y:4},{id:'bulb',x:16,y:5},{id:'slot0',x:7,y:2},{id:'slot1',x:13,y:3},{id:'slot2',x:11,y:5},{id:'gate',x:9,y:0,w:2}];
 function buildMap5(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));for(let x=0;x<MW;x++){M[0][x]='#';M[MH-1][x]='#'}for(let y=0;y<MH;y++){M[y][0]='#';M[y][MW-1]='#'}
  M[0][9]='G';M[0][10]='G';
  for(let y=11;y<=15;y++)for(let x=2;x<=7;x++)M[y][x]='~';for(let y=12;y<=13;y++)for(let x=3;x<=5;x++)M[y][x]='i';
@@ -634,7 +634,7 @@ function checkBoard(){const f=EX.f;if(f.bl.some(x=>!x))return;const want=['bat',
 function startFly(to,dest){sfx('fly');fly={t:0,to,dest:dest||null,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
 function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[AREA],tg=fly.dest||(fly.to?AR.to:AR.back);
  order.forEach((c,i)=>{const p=P(c),fr=fly.from[party.indexOf(p)];const ox=(i-1)*28;p.x=fr[0]+(tg[0]+ox-fr[0])*u;p.y=fr[1]+(tg[1]-fr[1])*u;p.moving=true;p.an='walk'});
- if(u>=1){if(AREA===1)EX.f.island=fly.to;else if(AREA===5||AREA===10)EX.f['isle'+AREA]=fly.to;else{EX.f['far'+AREA]=fly.to;if(AREA===2){EX.f.far=fly.to;if(fly.to)addNote('far')}}fly=null;sfx('ok');trail=[];for(let i=0;i<40;i++)trail.push([leader().x,leader().y]);saveEx()}}
+ if(u>=1){for(const c of order){const p=P(c);if(!canStand(p.x,p.y)){let ok=false;for(const o of[[0,0],[28,0],[-28,0],[56,0],[-56,0],[0,-26],[0,26],[28,-26],[-28,-26],[28,26],[-28,26],[14,0],[-14,0],[0,-13],[0,13]]){const X=tg[0]+o[0],Y=tg[1]+o[1];if(canStand(X,Y)){p.x=X;p.y=Y;ok=true;break}}if(!ok){p.x=tg[0];p.y=tg[1]}}}if(AREA===1)EX.f.island=fly.to;else if(AREA===5||AREA===10)EX.f['isle'+AREA]=fly.to;else{EX.f['far'+AREA]=fly.to;if(AREA===2){EX.f.far=fly.to;if(fly.to)addNote('far')}}fly=null;sfx('ok');trail=[];for(let i=0;i<40;i++)trail.push([leader().x,leader().y]);saveEx()}}
 /* --- update --- */
 let stepAcc=130,lastTileC='';
 function exUpdate(dt){if(fly){stepFly(dt);animChars(dt);return}
@@ -771,7 +771,7 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
  else if(o.id==='dial'){const s=spr('dial',48,52,g=>{R_(g,'#5b5580',6,10,36,40);R_(g,'#7a72a0',6,10,6,40);R_(g,'#3a3560',36,10,6,40);disc(g,'#3a3560',24,26,16);disc(g,'#5b5580',24,26,13);disc(g,'#2a1f3d',24,26,8);for(let k=0;k<8;k++){const a=k*Math.PI/4;R_(g,'#8ec3ea',Math.round(24+Math.cos(a)*14)-1,Math.round(26+Math.sin(a)*14)-1,2,2)}});
   x.drawImage(s,X,Y-10);const c=f.key?(f.door2?'#8ec3ea':'#7fe0d0'):'#3a3560';disc(x,c,X+25,Y+16,6);if(f.door2){x.globalAlpha=.4+.3*Math.sin(t/200);disc(x,'#8ec3ea',X+25,Y+16,16);x.globalAlpha=1}}}
 
-function drawCircuit(x,t){const f=EX.f,LX=6*TS+24,RX=14*TS+24,TY=2*TS+24,BY=5*TS+24,SX=[7*TS+24,RX,11*TS+24],SY=[TY,3*TS+24,BY],lit=f.door4;
+function drawCircuit(x,t){const f=EX.f,LX=6*TS+24,RX=13*TS+24,TY=2*TS+24,BY=5*TS+24,SX=[7*TS+24,RX,11*TS+24],SY=[TY,3*TS+24,BY],lit=f.door4;
 x.lineWidth=5;x.lineCap='square';x.strokeStyle=lit?'#ffe9a8':'#7d76a8';x.globalAlpha=lit?0.95:0.75;x.beginPath();
 const seg=(a,b,c,d)=>{x.moveTo(a,b);x.lineTo(c,d)};
 if(f.bl[0])seg(LX,TY,RX,TY);else{seg(LX,TY,SX[0]-21,TY);seg(SX[0]+21,TY,RX,TY)}
@@ -879,6 +879,7 @@ function initExplore(){const cv=exCv;
  document.getElementById('dA').onclick=interact;document.getElementById('dlg').onclick=()=>advance();
  document.getElementById('nbtn').onclick=()=>{const n=document.getElementById('note');n.hidden=!n.hidden;if(!n.hidden)renderNote()};
  document.getElementById('svbtn').onclick=()=>{if(fly)return;const L=leader();EX.pos={a:AREA,x:Math.round(L.x),y:Math.round(L.y)};saveEx();sfx('pick');say(['ここまでの ぼうけんを セーブした!','つぎに あそぶときは、この場所から つづけられる。'])};
+document.getElementById('tbtn').onclick=()=>{if(fly)return;say(['タイトル画面に もどりますか？','すすみ具合は 保存されています。'],['もどる','やめる'],i=>{if(i===0)location.reload()})};
  
  document.getElementById('pbtn').onclick=()=>{const p=document.getElementById('pty');p.hidden=!p.hidden;renderParty()};
  const sn=document.getElementById('snd');const sl=()=>{sn.textContent='おと: '+(EX.mute?'OFF':'ON')};sl();sn.onclick=()=>{EX.mute=!EX.mute;saveEx();sl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
