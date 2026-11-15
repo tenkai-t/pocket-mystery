@@ -429,20 +429,17 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   else if(!can(L,'sniff'))say(['こんもりした しげみだ。','おくに なにか ありそうな…。はなの きく 子なら わかるかも?']);
   else say(['くんくん…。しげみの おくから あまい においが する!【かんさつ】','かきわけると、かくれた みちが あらわれた!【はっけん】'],null,()=>{f.bush=true;discover('bush',L,'k',2);sfx('ok')});break;
  case'fragP':f.pink=true;discover('pink',L,'c',1);sfx('pick');say(['あけぼのの かけらを みつけた!','ほんのり ピンクに ひかっている。']);break;
- case'pond':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
-  if(isleF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['ここから もどるには とべる 子の ちからが いる。'])}
-  else if(!af)say(['いけの まんなかに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
-  else say(['いけの なかじまに きらりと ひかる ものが ある。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
- case'shore':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
-  if(isleF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['岸へ もどるには、とべる 子が パーティに いる 必要が ある。'])}
-  else if(!af)say(['いけの むこうに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
-  else say(['いけの むこうに きらりと ひかる ものが ある。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
- case'cliff':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));
-  if(farF()){if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。'])}
-  else if(!af)say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
-  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
+ case'pond':if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['ここから もどるには とべる 子の ちからが いる。'])}
+  else if(!can(L,'fly'))say(['いけの まんなかに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
+  else say(['いけの なかじまに きらりと ひかる ものが ある。【かんさつ】',flyLine(false)],null,()=>startFly(true));break;
+ case'shore':if(isleF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。岸へ もどる?':'みんなを つばさで つつんだ。岸へ もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['岸へ もどるには とべる 子の ちからが いる。'])}
+  else if(!can(L,'fly'))say(['いけの むこうに なにかが きらりと ひかる。','およげないし…。とべる 子なら とどくかも?']);
+  else say(['いけの むこうに きらりと ひかる ものが ある。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break;
+ case'cliff':if(farF()){if(can(L,'fly'))say([L==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。'])}
+  else if(!can(L,'fly'))say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
+  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',L==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break;
  case'fragY':if(isleF()&&!f.yellow){f.yellow=true;discover('yellow',L,'c',3);sfx('pick');say(['ひるの かけらを てにいれた!','まぶしい きいろに かがやいている。'])}
-  else if(isleF()){const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['きしへ もどるには とべる 子の ちからが いる。'])}break;
+  else if(isleF()){if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['きしへ もどるには とべる 子の ちからが いる。'])}break;
  case'ped0':case'ped1':case'ped2':{const i=+o.id[3];const bag=['pink','yellow','blue'].filter(c=>f[c]&&!f.pl.includes(c));
   if(f.pl[i]){say([PNAME[f.pl[i]]+'が はまっている。'],['はずす','そのまま'],k=>{if(k===0){f.pl[i]=null;saveEx()}})}
   else if(!bag.length)say(['まるい くぼみの ある だいざ。','ひかる かけらを はめられそうだ。']);
@@ -456,8 +453,9 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   else if(!can(L,'sniff'))say(['かべに ほそい われめが ある。','おくから かすかな においが するような…。はなの きく 子なら わかるかも?']);
   else say(['くんくん…。かべの われめの おくに つめたい においが する!【かんさつ】','かべが くずれ、かくれた くぼみが あらわれた!【はっけん】'],null,()=>{f.crack=true;discover('crack',L,'k',2);sfx('ok')});break;
  case'keyc':f.key=true;discover('key',L,'c',1);sfx('pick');say(['みずしょうの かぎを みつけた!','つめたく すんだ みずいろに ひかっている。']);break;
- case'chasm':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(!af)say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',fl==='witch'?'ほうきに みんなを 乗せて、ふわりと とびたった!':'みんなを つばさで つつんで、ふわりと とびたった!'],null,()=>startFly(true));break}
- case'ledge':{const af=order.some(c=>can(c,'fly')),fl=order.find(c=>can(c,'fly'));if(af)say([fl==='witch'?'ほうきに みんなを 乗せた。もどる?':'みんなを つばさで つつんだ。もどる?'],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。']);break}
+ case'chasm':if(!can(L,'fly'))say(['ふかい たにが ひろがっている。','むこうがわに わたるには…とべる 子なら?']);
+  else say(['ふかい たにの むこうに だんが みえる。【かんさつ】',flyLine(false)],null,()=>startFly(true));break;
+ case'ledge':if(can(L,'fly'))say([flyLine(true)],['もどる','まだここにいる'],i=>{if(i===0)startFly(false)});else say(['もどるには とべる 子の ちからが いる。']);break;
  case'dial':if(f.door2)say(['ダイヤルは 16を さしている。とびらは ひらいた。']);
   else if(!f.key)say(['かべの まるい ダイヤル。まんなかに かぎの くぼみが ある。','みずしょうの かぎが ひつようみたいだ。']);
   else say(['みずしょうの かぎを はめると、ダイヤルが ひかった。【かんさつ】','かずを あわせよう。いくつに する?【かせつ】'],['12','16','20'],i=>{
