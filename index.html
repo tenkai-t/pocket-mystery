@@ -201,7 +201,7 @@ function ui(){const ct=document.getElementById('ctabs');ct.innerHTML='';for(cons
  if(mode==='dress')loop()}
 const big=document.getElementById('big'),small=document.getElementById('small');
 /* ===== マイルーム ===== */
-const RW=384,RH=336,CS=48,COLS=8,ROWS=4,FY0=144,SPD=78,FUR=D.furn,GU=24,GC=16,GR=8,WGR=5,WINX=148,WINW=88,WINH=104;
+const RW=384,RH=336,CS=48,COLS=8,ROWS=4,FY0=144,SPD=78,FUR=D.furn,GU=12,GC=32,GR=16,WGR=10,WINX=148,WINW=88,WINH=104;
 const FORDER=['bed','bookshelf','lamp','plant','table','rug'];
 const WORDER=['gaku','tokei','poster'];
 let photos={};try{photos=JSON.parse(st.get('mv_photos1')||'{}')}catch(e){}
@@ -287,11 +287,11 @@ function wireDraw(){
 }
 function openDraw(){document.getElementById('drawScr').hidden=false;if(!dWired){dWired=true;wireDraw();dReset()}}
 function validItem(i){if(i.r===undefined)return false;if(i.t==='photo'){if(typeof i.pid!=='string'||(i.o!=='l'&&i.o!=='p'))return false}else if(!FUR[i.t])return false;const p=fp(i);if(i.z==='w')return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=WGR;return i.x>=0&&i.y>=0&&i.x+p.w<=GC&&i.y+p.h<=GR}
-function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.items){if(r.items.some(i=>i.r===undefined))for(const i of r.items){i.x*=2;i.y*=2;i.r=i.f?3:0;delete i.f}if(r.items.every(validItem)){r.items=r.items.filter(i=>i.t!=='photo'||photos[i.pid]);
+function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.items){if(r.items.some(i=>i.r===undefined))for(const i of r.items){i.x*=2;i.y*=2;i.r=i.f?3:0;delete i.f}if(r.v!==2){for(const i of r.items){i.x*=2;i.y*=2}r.v=2}if(r.items.every(validItem)){r.items=r.items.filter(i=>i.t!=='photo'||photos[i.pid]);
   for(const it of r.items){if(it.z!=='w')continue;const p=fp(it);const bad=(x,y)=>{const v=itemDims(it);if(x*GU<WINX+WINW&&x*GU+v.w>WINX&&y*GU<WINH)return true;const rc={x,y,w:p.w,h:p.h};return r.items.some(o=>o!==it&&o.z==='w'&&overlaps(rc,{x:o.x,y:o.y,...fp(o)}))};
    if(bad(it.x,it.y)){let done=false;for(let yy=0;yy<=WGR-p.h&&!done;yy++)for(let xx=0;xx<=GC-p.w&&!done;xx++)if(!bad(xx,yy)){it.x=xx;it.y=yy;done=true}}}
   return r}}}catch(e){}return defaultRoom()}
-function defaultRoom(){return{n:8,items:[{id:'i1',t:'bookshelf',x:0,y:0,r:0},{id:'i2',t:'lamp',x:4,y:0,r:0},{id:'i3',t:'bed',x:6,y:0,r:0},{id:'i4',t:'plant',x:12,y:0,r:0},{id:'i5',t:'rug',x:4,y:4,r:0},{id:'i6',t:'gaku',x:0,y:1,r:0,z:'w'},{id:'i7',t:'tokei',x:12,y:1,r:0,z:'w'}]}}
+function defaultRoom(){return{n:8,v:2,items:[{id:'i1',t:'bookshelf',x:0,y:0,r:0},{id:'i2',t:'lamp',x:8,y:0,r:0},{id:'i3',t:'bed',x:12,y:0,r:0},{id:'i4',t:'plant',x:24,y:0,r:0},{id:'i5',t:'rug',x:8,y:8,r:0},{id:'i6',t:'gaku',x:0,y:2,r:0,z:'w'},{id:'i7',t:'tokei',x:24,y:2,r:0,z:'w'}]}}
 let room=loadRoom(),sel=null,raf=null,lastT=0,drag=null,toastT=0,toastMsg='';
 for(const it of room.items)if(it.t==='photo'&&photos[it.pid]&&!photos[it.pid].o)photos[it.pid].o=it.o;
 function saveRoom(){st.set('mv_room2',JSON.stringify(room))}
@@ -306,7 +306,7 @@ const ccache={};
 function charSpr(c,an,idx){const e=S.cur[c]||{};const k=c+JSON.stringify(e)+an+idx;if(ccache[k])return ccache[k];if(Object.keys(ccache).length>400)for(const q in ccache)delete ccache[q];
  const G=compose(c,e,an,idx);const AA_=D.chars[c].anims[an],fr=AA_[idx%AA_.length].r;let lr=0;fr.forEach((r,y)=>{if(/[^.]/.test(r))lr=y});const dd=D.chars[c];return ccache[k]={cv:sprFromGrid(G,false),base:lr+(dd.oy!==undefined?dd.oy:OY)+2,cx:(dd.ox!==undefined?dd.ox:OX)+(dd.cxf!==undefined?Math.round(dd.cxf):12)+1}}
 function footBase(c){return charSpr(c,'idle',0).base}
-function fp(it){const m=FUR[it.t];if(it.z==='w'){const v=itemDims(it);return{w:Math.ceil(v.w/GU),h:Math.ceil(v.h/GU)}}let w=m.fw*2,h=m.fh*2;if(it.r===1||it.r===3){const q=w;w=h;h=q}return{w,h}}
+function fp(it){const m=FUR[it.t];if(it.z==='w'){const v=itemDims(it);return{w:Math.ceil(v.w/GU),h:Math.ceil(v.h/GU)}}let w=m.fw*(48/GU),h=m.fh*(48/GU);if(it.r===1||it.r===3){const q=w;w=h;h=q}return{w,h}}
 function overlaps(a,b){return a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h}
 function canPlace(it,x,y,ignore){const p=fp(it),wall=it.z==='w';if(x<0||y<0||x+p.w>GC||y+p.h>(wall?WGR:GR))return false;
  if(wall){const v=itemDims(it);if(x*GU<WINX+WINW&&x*GU+v.w>WINX&&y*GU<WINH)return false}
@@ -317,7 +317,7 @@ function bfs(b,sx,sy,goals){const key=(x,y)=>y*GC+x;const prev=new Map([[key(sx,
  if(gs.has(key(sx,sy)))return[];
  while(q.length){const[x,y]=q.shift();for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GC||ny>=GR||b[ny][nx]||prev.has(key(nx,ny)))continue;prev.set(key(nx,ny),[x,y]);
   if(gs.has(key(nx,ny))){const p=[[nx,ny]];let c=[x,y];while(c&&!(c[0]===sx&&c[1]===sy)){p.push(c);c=prev.get(key(c[0],c[1]))}return p.reverse()}q.push([nx,ny])}}return null}
-const cellC=(cx,cy)=>[cx*GU+12,FY0+cy*GU+20];
+const cellC=(cx,cy)=>[cx*GU+6,FY0+cy*GU+10];
 const chars=['ribbon','witch','maid','neko','miko','kohaku','astra','rake','puppet','onsen'].map((c,i)=>({c,x:0,y:0,face:1,state:'idle',t:1500+i*600,path:[],after:'idle',anim:'idle',fi:0,ft:0,bed:null,init:false,spots:null}));
 function freeCells(b){const r=[];for(let y=0;y<GR;y++)for(let x=0;x<GC;x++)if(!b[y][x])r.push([x,y]);return r}
 function setAnim(o,a){if(o.anim!==a){o.anim=a;o.fi=0;o.ft=0}}
