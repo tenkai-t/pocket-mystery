@@ -374,7 +374,7 @@ function makeBg(){const cv=document.createElement('canvas');cv.width=RW;cv.heigh
  return cv}
 function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.width/RW,0,0,cv.width/RW,0,0);x.imageSmoothingEnabled=false;
  if(!bgc)bgc=makeBg();x.drawImage(bgc,0,0);
- if(sel){x.fillStyle='rgba(255,255,255,.16)';for(let j=0;j<GR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,FY0+j*GU,GU,GU);for(let j=0;j<WGR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,j*GU,GU,GU);const sit=room.items.find(i=>i.id===sel);if(sit&&sit.z==='w'){x.fillStyle='rgba(216,80,94,.20)';x.fillRect(WINX,0,WINW,WINH)}}
+ if(sel&&!document.getElementById('editUI').hidden){x.fillStyle='rgba(255,255,255,.16)';for(let j=0;j<GR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,FY0+j*GU,GU,GU);for(let j=0;j<WGR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,j*GU,GU,GU);const sit=room.items.find(i=>i.id===sel);if(sit&&sit.z==='w'){x.fillStyle='rgba(216,80,94,.20)';x.fillRect(WINX,0,WINW,WINH)}}
  const list=[];
  for(const it of room.items){if(it.z==='w'){const s=itemSpr(it);x.drawImage(s.cv,it.x*GU-1,it.y*GU-1);continue}const m=FUR[it.t],p=fp(it);list.push({k:m.rug?-1:FY0+(it.y+p.h)*GU,f:()=>{const s=furnSpr(it.t,it.r||0);x.drawImage(s.cv,it.x*GU-1,FY0+(it.y+p.h)*GU-s.h-1)}})}
  for(const o of chars){const sleeping=o.state==='sleep';const A=D.chars[o.c].anims[o.anim];const idxs=o.anim==='sleep'?(D.chars[o.c].sleepIdx||[1,2,3,4,5]):A.map((_,i)=>i);const idx=idxs[o.fi%idxs.length];const an2=o.state==='walk'?o.anim+vsuf(o.c,o.view):o.anim;
@@ -382,7 +382,7 @@ function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.widt
    if(!sleeping){x.fillStyle='rgba(42,31,61,.22)';x.beginPath();x.ellipse(o.x,o.y-1,(D.chars[o.c].w||28)>40?13:9,3,0,0,7);x.fill()}
    const q=cv.width/RW,dy=Math.round(o.y*q-base),X0=Math.round(o.x*q);x.save();x.setTransform(1,0,0,1,0,0);if(o.face<0){x.translate(X0,0);x.scale(-1,1);x.drawImage(s.cv,-s.cx,dy)}else x.drawImage(s.cv,X0-s.cx,dy);x.restore()}})}
  list.sort((a,b)=>a.k-b.k);list.forEach(e=>e.f());
- if(sel){const it=room.items.find(i=>i.id===sel);if(it){const p=fp(it),oy=it.z==='w'?0:FY0,ow=it.z==='w'?itemDims(it).w:p.w*GU,oh=it.z==='w'?itemDims(it).h:p.h*GU;x.strokeStyle='#ffffff';x.lineWidth=1;x.setLineDash([2,2]);x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.strokeStyle='#d8505e';x.lineDashOffset=2;x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.setLineDash([]);x.lineDashOffset=0}}
+ if(sel&&!document.getElementById('editUI').hidden){const it=room.items.find(i=>i.id===sel);if(it){const p=fp(it),oy=it.z==='w'?0:FY0,ow=it.z==='w'?itemDims(it).w:p.w*GU,oh=it.z==='w'?itemDims(it).h:p.h*GU;x.strokeStyle='#ffffff';x.lineWidth=1;x.setLineDash([2,2]);x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.strokeStyle='#d8505e';x.lineDashOffset=2;x.strokeRect(it.x*GU+.5,oy+it.y*GU+.5,ow-1,oh-1);x.setLineDash([]);x.lineDashOffset=0}}
  if(toastMsg&&performance.now()<toastT){x.fillStyle='rgba(42,31,61,.85)';x.fillRect(112,10,160,24);x.fillStyle='#fff';x.font='14px sans-serif';x.textAlign='center';x.fillText(toastMsg,192,27)}}
 function toast(m){toastMsg=m;toastT=performance.now()+1800}
 function roomLoop(t){if(mode!=='room')return;const dt=Math.min(100,t-(lastT||t));lastT=t;roomUpdate(dt);roomDraw();raf=requestAnimationFrame(roomLoop)}
@@ -424,7 +424,7 @@ function initRoom(){
   im.onerror=()=>{URL.revokeObjectURL(url);toast('よみこめませんでした')};
   im.src=url});
  document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()};
- document.getElementById('editToggle').onclick=()=>{const e=document.getElementById('editUI'),b=document.getElementById('editToggle');e.hidden=!e.hidden;b.textContent=e.hidden?'配置を変える':'配置をおわる'}}
+ document.getElementById('editToggle').onclick=()=>{const e=document.getElementById('editUI'),b=document.getElementById('editToggle');e.hidden=!e.hidden;b.textContent=e.hidden?'配置を変える':'配置をおわる';if(e.hidden){sel=null;drag=null;roomUi()}}}
 function setMode(m){mode=m;document.getElementById('pg1').hidden=m!=='dress';document.getElementById('pg2').hidden=m!=='room';document.getElementById('pg3').hidden=m!=='explore';
  document.querySelectorAll('#mtabs button').forEach(b=>b.className=b.dataset.m===m?'on':'');
  clearTimeout(timer);cancelAnimationFrame(raf);cancelAnimationFrame(exRaf);dir.x=0;dir.y=0;if(typeof stick!=='undefined')stick.a=false;if(m==='dress'){fi=0;ui()}else if(m==='room'){lastT=0;roomUi();window.scrollTo(0,0);raf=requestAnimationFrame(roomLoop)}else{exLast=0;renderLeaders();renderDlg();exRaf=requestAnimationFrame(exLoop)}}
