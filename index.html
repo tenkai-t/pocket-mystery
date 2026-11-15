@@ -63,11 +63,14 @@ canvas{image-rendering:pixelated;max-width:100%}
 </div>
 <div id="pg2">
 <canvas id="room" style="width:min(100%,384px);margin:0 auto;image-rendering:pixelated;touch-action:none;border-radius:14px;border:2px solid var(--line);display:block"></canvas>
+<div class="mini" style="margin:8px 0"><button id="editToggle">配置を変える</button></div>
+<div id="editUI" hidden>
 <div class="lab" id="selname" style="margin:6px 0">ものをタップしてえらぶ</div>
 <div class="ctl" id="ctl"><button id="mL">◀</button><button id="mU">▲</button><button id="mD">▼</button><button id="mR">▶</button><button id="rflip">むきをかえる</button><button id="rdel">かたづける</button></div>
 <div class="sv">かぐをふやす（タップで追加）</div><div class="grid" id="ftabs" style="margin-top:6px"></div>
 <div class="mini"><button id="rrst">はいちをはじめにもどす</button></div>
 <p class="lab" style="margin-top:10px">かぐはドラッグでもうごかせます。配置は自動で保存されます。キャラクターは自分で歩いたり、ベッドで眠ったりします。</p>
+</div>
 </div>
 
 <div id="pg3" hidden>
@@ -270,10 +273,11 @@ function initRoom(){
  document.getElementById('mL').onclick=()=>moveSel(-1,0);document.getElementById('mR').onclick=()=>moveSel(1,0);document.getElementById('mU').onclick=()=>moveSel(0,-1);document.getElementById('mD').onclick=()=>moveSel(0,1);
  document.getElementById('rflip').onclick=()=>{const it=room.items.find(i=>i.id===sel);if(it){it.f=it.f?0:1;saveRoom()}};
  document.getElementById('rdel').onclick=()=>{const i=room.items.findIndex(i=>i.id===sel);if(i>=0){room.items.splice(i,1);sel=null;saveRoom();roomUi()}};
- document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()}}
+ document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()};
+ document.getElementById('editToggle').onclick=()=>{const e=document.getElementById('editUI'),b=document.getElementById('editToggle');e.hidden=!e.hidden;b.textContent=e.hidden?'配置を変える':'配置をおわる'}}
 function setMode(m){mode=m;document.getElementById('pg1').hidden=m!=='dress';document.getElementById('pg2').hidden=m!=='room';document.getElementById('pg3').hidden=m!=='explore';
  document.querySelectorAll('#mtabs button').forEach(b=>b.className=b.dataset.m===m?'on':'');
- clearTimeout(timer);cancelAnimationFrame(raf);cancelAnimationFrame(exRaf);dir.x=0;dir.y=0;if(typeof stick!=='undefined')stick.a=false;if(m==='dress'){fi=0;ui()}else if(m==='room'){lastT=0;roomUi();raf=requestAnimationFrame(roomLoop)}else{exLast=0;renderLeaders();renderDlg();exRaf=requestAnimationFrame(exLoop)}}
+ clearTimeout(timer);cancelAnimationFrame(raf);cancelAnimationFrame(exRaf);dir.x=0;dir.y=0;if(typeof stick!=='undefined')stick.a=false;if(m==='dress'){fi=0;ui()}else if(m==='room'){lastT=0;roomUi();window.scrollTo(0,0);raf=requestAnimationFrame(roomLoop)}else{exLast=0;renderLeaders();renderDlg();exRaf=requestAnimationFrame(exLoop)}}
 /* ===== たんけん ===== */
 const TS=48,HT=24,FT=30,FB=11,FHt=8,TSTEP=5,FOL=5,MW=20,MH=18,VW=384,VH=480,PCOL={pink:'#ff8a95',yellow:'#ffe066',blue:'#5fa8f0'},PNAME={pink:'あけぼののかけら',yellow:'ひるのかけら',blue:'よるのかけら'};
 const NAMES2={ribbon:'リボン',witch:'まじょ',maid:'メイド',neko:'ねこみみ',miko:'みこ',kohaku:'コハク',astra:'アストラ'};
@@ -874,9 +878,9 @@ setMode('room');
  const tb=document.getElementById('tsnd');const tlbl=()=>{tb.textContent='おと: '+(EX.mute?'OFF':'ON')};tlbl();
  tb.onclick=e=>{e.stopPropagation();EX.mute=!EX.mute;saveEx();tlbl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
  let auto=false;try{auto=!!sessionStorage.getItem('mv_autostart');sessionStorage.removeItem('mv_autostart')}catch(e){}
- if(auto){ts.remove()}
+ if(auto){ts.remove();window.scrollTo(0,0)}
  if(EX&&(EX.area>1||(EX.notes&&EX.notes.length)))sb.textContent='▶ つづきから はじめる';
- const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');setTimeout(()=>ts.remove(),600)};
+ const go=()=>{if(ts.classList.contains('hide'))return;sfx('gate');bgmStart();ts.classList.add('hide');window.scrollTo(0,0);setTimeout(()=>{ts.remove();window.scrollTo(0,0)},600)};
  sb.onclick=e=>{e.stopPropagation();go()}}
 ui();
 </script>
