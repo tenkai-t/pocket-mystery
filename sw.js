@@ -1,6 +1,6 @@
 // ポケットミステリー Service Worker
 // 公開のたびに PM_VER を上げること（古いキャッシュを破棄して更新を届けるため）
-const PM_VER = 'pm-v66';
+const PM_VER = 'pm-v67';
 const ASSETS = ['./', './index.html', './icon-192.png', './icon-180.png', './icon-512.png', './manifest.json'];
 
 self.addEventListener('install', e => {
