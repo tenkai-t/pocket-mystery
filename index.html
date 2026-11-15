@@ -335,9 +335,9 @@ function buildMap4(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));for
  M[0][9]='G';M[0][10]='G';for(let x=1;x<=18;x++){M[7][x]='v';M[8][x]='v'}
  [[3,3],[16,3],[6,6],[13,6],[2,14],[17,15],[7,11],[14,11]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]='#'});
  [[5,4],[15,5],[4,15],[12,13],[8,5],[16,10]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]=','});
- for(let y=1;y<=16;y++){if(y!==7&&y!==8&&(M[y][10]==='.'||M[y][10]===','))M[y][10]='='}
- for(let x=7;x<=13;x++)if(M[3][x]==='.'||M[3][x]===',')M[3][x]='=';return M}
-const OBJ4=[{id:'tablet4',x:5,y:13,solid:true},{id:'bat',x:15,y:14},{id:'wireSpot',x:3,y:11},{id:'chasm',x:10,y:9},{id:'ledge',x:10,y:6},{id:'bulbB',x:13,y:4},{id:'bulb',x:16,y:5},{id:'slot0',x:8,y:2,solid:true},{id:'slot1',x:10,y:2,solid:true},{id:'slot2',x:12,y:2,solid:true},{id:'gate',x:9,y:0,w:2}];
+ for(let y=1;y<=16;y++){if(y!==7&&y!==8&&!(y>=2&&y<=5)&&(M[y][10]==='.'||M[y][10]===','))M[y][10]='='}
+ return M}
+const OBJ4=[{id:'tablet4',x:5,y:13,solid:true},{id:'bat',x:15,y:14},{id:'wireSpot',x:3,y:11},{id:'chasm',x:10,y:9},{id:'ledge',x:10,y:6},{id:'bulbB',x:13,y:4},{id:'bulb',x:16,y:5},{id:'slot0',x:7,y:2},{id:'slot1',x:14,y:3},{id:'slot2',x:11,y:5},{id:'gate',x:9,y:0,w:2}];
 function buildMap5(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));for(let x=0;x<MW;x++){M[0][x]='#';M[MH-1][x]='#'}for(let y=0;y<MH;y++){M[y][0]='#';M[y][MW-1]='#'}
  M[0][9]='G';M[0][10]='G';
  for(let y=11;y<=15;y++)for(let x=2;x<=7;x++)M[y][x]='~';for(let y=12;y<=13;y++)for(let x=3;x<=5;x++)M[y][x]='i';
@@ -396,7 +396,7 @@ function solidAt(px,py){const tx=Math.floor(px/TS),ty=Math.floor(py/TS);const t=
  for(const o of OBJ)if(o.solid&&o.x===tx&&o.y===ty)return true;return false}
 function canStand(x,y){return!(solidAt(x-FB,y)||solidAt(x+FB,y)||solidAt(x-FB,y-FHt)||solidAt(x+FB,y-FHt))}
 const party=ALL7.map((c,i)=>({c,view:'down',x:10*TS+HT,y:15*TS+FT,tx:0,ty:0,face:1,moving:false,fi:0,ft:0,an:'idle'}));
-let mapCv=null,order=EX.order.slice(),trail=[],dir={x:0,y:0},exRaf=null,exLast=0,dlg=null,fly=null,xcam=[0,0];
+let mapCv=null,order=EX.order.slice(),trail=[],dir={x:0,y:0},exRaf=null,exLast=0,dlg=null,fly=null,xcam=[0,0];let flow4T=0;
 const P=c=>party.find(p=>p.c===c);
 function leader(){return P(order[0])}
 function resetPos(){const st0=AREAS[AREA].start;const bp=(EX.pos&&EX.pos.a===AREA&&canStand(EX.pos.x,EX.pos.y))?[EX.pos.x,EX.pos.y]:[st0[0]*TS+HT,st0[1]*TS+FT];trail=[];for(let i=0;i<40;i++)trail.push([bp[0],bp[1]+(39-i)*TSTEP]);order.forEach((c,i)=>{const p=P(c);const t=trail[Math.max(0,trail.length-1-i*FOL)];p.x=t[0];p.y=t[1];p.face=1});const lt=tileAt(Math.floor(bp[0]/TS),Math.floor(bp[1]/TS)),lr=Math.floor(bp[1]/TS);
@@ -420,7 +420,7 @@ const onIsle=(MAP[Math.floor(L.y/TS)]||[])[Math.floor(L.x/TS)]==='i';if(hit&&(is
 function objOn(o){const f=EX.f;if(o.id==='fragP'&&f.pink)return false;if(o.id==='fragY'&&f.yellow&&!f.island)return false;if(o.id==='keyc'&&f.key)return false;if(o.id==='chasm'&&farF())return false;if(o.id==='ledge'&&!farF())return false;if(o.id==='stone3'&&f.st3)return false;if(o.id==='bat'&&f.bat)return false;if(o.id==='bulbB'&&f.bulbB)return false;if(o.id==='bulb'&&f.bulb)return false;if(o.id==='colR'&&f.colR)return false;if(o.id==='colY'&&f.colY)return false;if(o.id==='iceWall'&&f.melt8)return false;if(o.id==='iceFlower'&&f.fruit8)return false;if(o.id==='sandSpot'&&f.mag)return false;return true}
 function hintText(){const f=EX.f;if(AREA===1){if(f.gate)return 'ほしの もんが ひらいた。むこうへ いってみよう!';if(!f.blue)return 'ほそい 道の さきに いしぶみが ある。よむのが とくいな 子と いってみよう。';if(!f.pink)return 'ひだりの しげみが きになる。かぎ分けの とくいな 子が いると いいな。';if(!f.yellow)return 'いけの まんなかに ひかる ものが あった。とべる 子の ちからで!';return 'うえの 3つの だいざに、ひかる かけらを じゅんばんに ならべよう。'}
  if(AREA===3){if(f.door3)return '丘の門が ひらいた。むこうへ いってみよう!';if(!f.read3)return '入口近くの 石碑を、よめる 子と しらべよう。';const n=(f.st1?1:0)+(f.st2?1:0)+(f.st3?1:0);if(n<3)return 'においの する 場所と、谷の むこうで、石を あと '+(3-n)+'つ さがそう。';if(!f.cmp)return '丘の まんなかの てんびんで、石を 2つずつ くらべよう。';return 'てんびんで くらべた 結果を 思いうかべて、いちばん重い 石を 谷の むこうの 台に のせよう。'}
- if(AREA===4){if(f.door4)return '回廊が 明るく なった。門へ すすもう!';if(!f.read4)return '壁の 図を、よめる 子と しらべよう。';if(!f.bat)return '入口の 近くに 電池が 落ちて いないか さがそう。';if(!f.wire)return '草むらの 金属の においを、かげる 子と たどろう。';if(!f.bulb)return '谷の むこうに 本物の 豆電球が あるはず。とべる 子と!';return '北の 回路盤に 部品を 3つ はめよう。輪に なると 光るよ。'}
+ if(AREA===4){if(f.door4)return '回廊が 明るく なった。門へ すすもう!';if(!f.read4)return '壁の 図を、よめる 子と しらべよう。';if(!f.bat)return '入口の 近くに 電池が 落ちて いないか さがそう。';if(!f.wire)return '草むらの 金属の においを、かげる 子と たどろう。';if(!f.bulb)return '谷の むこうに 本物の 豆電球が あるはず。とべる 子と!';return '北の 地面の 回路図に 部品を 3つ はめよう。輪に なると 光るよ。'}
  if(AREA===5){if(f.door5)return '森の門が ひらいた。むこうへ いってみよう!';if(!f.read5)return '入口近くの 石板を、よめる 子と しらべよう。';if(!f.mk1)return '立て札の 指示: 大きな木から 北の 広場へ。かげる 子と 掘って みよう。';if(!f.mk2)return '立て札の つぎの 指示: 東のはずれを かいで みよう。';if(!f.mk3)return 'さいごの 目印は 南西の 池の 小島。とべる 子と わたろう。';return '目印は そろった。大きな木の 宝箱へ!'}
  if(AREA===6){if(f.door6)return '山の門が ひらいた。むこうへ いってみよう!';if(!f.read6)return '入口近くの 石碑を、よめる 子と しらべよう。';if(!f.mag)return '西の 砂場を、かげる 子と 掘って みよう。大きな 磁石が あるかも。';if(!f.sort6)return '東の 落ち物の 場所で、磁石の 仕分けを ためそう。';if(!f.key6)return '谷の むこうの 崖の 上から、磁石で 鉄のかぎを 引き寄せよう。';return '門の 柱に 鉄のかぎを 差し込もう。'}
  if(AREA===7){if(f.door7)return '橋の門が ひらいた。むこうへ いってみよう!';if(!f.read7)return '入口近くの 立て札を、よめる 子と 読もう。';if(!f.w1)return '川の 飛び石で しりとり。『りんご』の つぎは?';if(!f.w2)return 'つぎの 石。『ごりら』の つぎは?';if(!f.w3)return '北側の 東の 草むらに、かくれた 石が ある。かげる 子と 探そう。';return '北東の 宝箱へ。さいごの しりとりが 待って いる。'}
@@ -494,9 +494,9 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   say(['どの石を のせる?'],held.map(h=>h[1]),i=>{const k=held[i][0];
    if(k==='st3'){f.door3=true;discover('door3',null,'',0);for(const c in EX.stats)addStat(c,'c',2);saveEx();sfx('gate');say(['台が ぐっと しずんだ!【はっけん】','いちばん重い 石の 重さで、丘の門が ゆっくり ひらいていく…!'])}
    else{addStat(L,'k',1);addNote('fail3');saveEx();sfx('bad');say(['台は すこし ゆれただけで、もとに もどった。【じっけん】','かるすぎる みたいだ。てんびんで くらべて、いちばん重い 石を さがそう。'])}});break}
- case'tablet4':if(!can(L,'read'))say(['壁に 回路の 図が かかれている。','よむのが とくいな 子なら わかるかも?']);
-  else if(f.read4)say(['「電池・導線・豆電球を まるく 輪に つなぐと 光る」','部品を 3つ 集めて、回路盤に はめよう。']);
-  else say(['壁に でんきゅうの 図が かいてある。【かんさつ】','「でんきゅうが つくのは、どんな つなぎ方?」【かせつ】'],['まるく 輪に つなぐ','まっすぐ 1本で おわる','電池だけ おく'],i=>{
+ case'tablet4':if(!can(L,'read'))say(['石板に 回路の 図が かかれている。','よむのが とくいな 子なら わかるかも?']);
+  else if(f.read4)say(['「電池・導線・豆電球を まるく 輪に つなぐと 光る」','部品を 3つ 集めて、地面の 回路図に はめよう。']);
+  else say(['石板に でんきゅうの 図が かいてある。【かんさつ】','「でんきゅうが つくのは、どんな つなぎ方?」【かせつ】'],['まるく 輪に つなぐ','まっすぐ 1本で おわる','電池だけ おく'],i=>{
    if(i===0){f.read4=true;discover('tablet4',L,'k',3);sfx('ok');say(['そう! 輪に つなぐと 電気が ぐるっと 流れる。【はっけん】','電池と 導線と 豆電球を さがそう。'])}
    else{addStat(L,'k',1);saveEx();sfx('bad');say(['…図が ぼんやり してきた。【じっけん】','電気の 通り道が、と中で 切れて いないか 考えよう。'])}});break;
  case'bat':f.bat=true;addStat(L,'c',1);saveEx();sfx('pick');say(['電池を みつけた!','回路の 部品の 1つだ。']);break;
@@ -508,7 +508,7 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
  case'slot0':case'slot1':case'slot2':{const i=+o.id[4],PN={bat:'電池',wire:'導線',bulb:'豆電球',bulbB:'われた電球'},bag=['bat','wire','bulb','bulbB'].filter(k=>f[k]&&!f.bl.includes(k));
   if(f.door4){say(['回路は 明るく ひかっている。']);break}
   if(f.bl[i]){say([PN[f.bl[i]]+'が はまっている。'],['はずす','そのまま'],k=>{if(k===0){f.bl[i]=null;saveEx()}})}
-  else if(!bag.length)say(['回路盤の くぼみだ。','部品（電池・導線・豆電球）を はめられそうだ。']);
+  else if(!bag.length)say(['地面に 描かれた 回路図の くぼみだ。','部品（電池・導線・豆電球）を はめられそうだ。']);
   else say(['どの 部品を はめる?'],bag.map(k=>PN[k]),k=>{f.bl[i]=bag[k];saveEx();checkBoard()});break}
  case'tablet5':if(!can(L,'read'))say(['石板に 矢印と 方角の もじが ある。','よむのが とくいな 子なら わかるかも?']);
   else if(f.read5)say(['「地図では 上が 北、右が 東、下が 南、左が 西」','入口の 立て札の 指示で 宝を さがそう。']);
@@ -629,7 +629,7 @@ function checkPed(){const f=EX.f;if(f.pl.some(x=>!x))return;const want=['pink','
  if(want.every((c,i)=>f.pl[i]===c)){f.gate=true;discover('gate',null,'',0);sfx('gate');for(const c in EX.stats)addStat(c,'c',2);saveEx();say(['3つの ひかりが ひとつに つながった!【はっけん】','ほしの もんが ゆっくりと ひらいていく…!'])}
  else{f.pl=[null,null,null];addStat(order[0],'k',1);addNote('fail');saveEx();sfx('bad');say(['ひかりが にごって はじけた…!【じっけん】','かけらは てもとに もどった。じゅんばんを かんがえなおそう。'])}}
 function checkBoard(){const f=EX.f;if(f.bl.some(x=>!x))return;const want=['bat','wire','bulb'];
- if(want.every(k=>f.bl.includes(k))){f.door4=true;discover('door4',null,'',0);sfx('gate');for(const c in EX.stats)addStat(c,'c',2);saveEx();say(['でんきゅうが ぱっと 明るく 光った!【はっけん】','回路の 輪が つながり、回廊の門が ひらいていく…!'])}
+ if(want.every(k=>f.bl.includes(k))){f.door4=true;flow4T=performance.now();discover('door4',null,'',0);sfx('gate');for(const c in EX.stats)addStat(c,'c',2);saveEx();say(['でんきゅうが ぱっと 明るく 光った!【はっけん】','回路の 輪が つながり、回廊の門が ひらいていく…!'])}
  else{f.bl=[null,null,null];addStat(order[0],'k',1);addNote('fail4');saveEx();sfx('bad');say(['…でんきゅうは つかない。【じっけん】','部品は 手元に もどった。',f.bulbB&&!f.bulb?'われた 電球では 光らないかも。本物の 電球を さがそう。':'電池・導線・豆電球の 3つが そろって いるか 見なおそう。'])}}
 function startFly(to,dest){sfx('fly');fly={t:0,to,dest:dest||null,from:party.map(p=>[p.x,p.y])};dir={x:0,y:0}}
 function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[AREA],tg=fly.dest||(fly.to?AR.to:AR.back);
@@ -742,9 +742,6 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
   if(!got){R_(x,'rgba(90,70,40,.5)',X+8,Y+30,32,8);R_(x,'rgba(120,95,55,.6)',X+14,Y+26,20,6);if(Math.sin(t/300+o.x)>0){R_(x,'#fff4a8',X+22,Y+14,3,3);R_(x,'#fff4a8',X+30,Y+20,2,2)}}}
  else if(o.id==='sign5'||o.id==='lakeSpot'){const s=spr('sign5',36,44,g=>{R_(g,'#7a4f2f',16,14,5,28);R_(g,'#a8744a',2,2,32,16);R_(g,'#c99a68',2,2,32,3);R_(g,'#5b3a20',8,8,20,2);R_(g,'#5b3a20',8,12,14,2)});x.drawImage(s,X+6,Y+2)}
  else if(o.id==='bigtree'){const s=treeSpr(1);x.drawImage(s,X-38,Y-84,124,152)}
- else if(o.id.startsWith('slot')){const i=+o.id[4],pt=f.bl[i];const s=spr('slot',44,56,g=>{R_(g,'#5b5580',6,16,32,36);R_(g,'#7a72a0',6,16,5,36);R_(g,'#3a3560',32,16,6,36);R_(g,'#7a72a0',2,6,40,12);R_(g,'#3a3560',2,14,40,4);R_(g,'#3a3560',2,48,40,8)});x.drawImage(s,X+2,Y-12);R_(x,'#2a1f3d',X+14,Y-4,20,10);
-  if(pt==='bat'){R_(x,'#3fae6a',X+19,Y-3,10,8)}else if(pt==='wire'){R_(x,'#f08a3c',X+17,Y-1,14,3)}else if(pt==='bulb'){disc(x,'#ffe066',X+24,Y,6)}else if(pt==='bulbB'){disc(x,'#9aa4b0',X+24,Y,6)}
-  if(f.door4){x.globalAlpha=.3+.2*Math.sin(t/200);disc(x,'#ffe066',X+24,Y,20);x.globalAlpha=1}}
  else if(o.id==='sortSpot'){R_(x,'#a8744a',X+6,Y+30,10,4);R_(x,'#8a86a0',X+20,Y+28,9,7);R_(x,'#c0c6d4',X+34,Y+26,4,10);if(f.sort6){R_(x,'#e0483e',X+32,Y+16,8,6);R_(x,'#f5f5f5',X+32,Y+20,8,2)}}
  else if(o.id==='magSpot'){const s=spr('magspot',52,48,g=>{disc(g,'#5b5580',26,30,20);disc(g,'#5b5580',13,34,11);disc(g,'#5b5580',39,34,11);R_(g,'#7a72a0',10,16,22,4)});x.drawImage(s,X-2,Y+2);
   if(!f.key6){x.globalAlpha=.5+.4*Math.sin(t/200);R_(x,'#ffd24a',X+22,Y+40,5,3);x.globalAlpha=1}}
@@ -774,10 +771,24 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
  else if(o.id==='dial'){const s=spr('dial',48,52,g=>{R_(g,'#5b5580',6,10,36,40);R_(g,'#7a72a0',6,10,6,40);R_(g,'#3a3560',36,10,6,40);disc(g,'#3a3560',24,26,16);disc(g,'#5b5580',24,26,13);disc(g,'#2a1f3d',24,26,8);for(let k=0;k<8;k++){const a=k*Math.PI/4;R_(g,'#8ec3ea',Math.round(24+Math.cos(a)*14)-1,Math.round(26+Math.sin(a)*14)-1,2,2)}});
   x.drawImage(s,X,Y-10);const c=f.key?(f.door2?'#8ec3ea':'#7fe0d0'):'#3a3560';disc(x,c,X+25,Y+16,6);if(f.door2){x.globalAlpha=.4+.3*Math.sin(t/200);disc(x,'#8ec3ea',X+25,Y+16,16);x.globalAlpha=1}}}
 
+function drawCircuit(x,t){const f=EX.f,LX=6*TS+24,RX=14*TS+24,TY=2*TS+24,BY=5*TS+24,SX=[7*TS+24,RX,11*TS+24],SY=[TY,3*TS+24,BY],lit=f.door4;
+x.lineWidth=5;x.lineCap='square';x.strokeStyle=lit?'#ffe9a8':'#7d76a8';x.globalAlpha=lit?0.95:0.75;x.beginPath();
+const seg=(a,b,c,d)=>{x.moveTo(a,b);x.lineTo(c,d)};
+if(f.bl[0])seg(LX,TY,RX,TY);else{seg(LX,TY,SX[0]-21,TY);seg(SX[0]+21,TY,RX,TY)}
+if(f.bl[1])seg(RX,TY,RX,BY);else{seg(RX,TY,RX,SY[1]-21);seg(RX,SY[1]+21,RX,BY)}
+if(f.bl[2])seg(RX,BY,LX,BY);else{seg(SX[2]+21,BY,RX,BY);seg(LX,BY,SX[2]-21,BY)}
+seg(LX,BY,LX,TY);x.stroke();x.globalAlpha=1;x.lineCap='butt';
+for(let i=0;i<3;i++){const cx=SX[i],cy=SY[i],pt=f.bl[i];disc(x,'rgba(30,22,52,.45)',cx,cy,15);
+if(!pt){x.strokeStyle='#c9c4d8';x.lineWidth=2;x.setLineDash([4,4]);x.beginPath();x.arc(cx,cy,12,0,6.3);x.stroke();x.setLineDash([])}
+else if(pt==='bat'){R_(x,'#3fae6a',cx-11,cy-8,22,16);R_(x,'#c9c4d8',cx+11,cy-3,4,6);R_(x,'#ffffff',cx-6,cy-1,5,2);R_(x,'#ffffff',cx+3,cy-4,2,8);R_(x,'#ffffff',cx+1,cy-1,6,2)}
+else if(pt==='wire'){if(i===1)R_(x,'#f08a3c',cx-2,cy-17,4,34);else R_(x,'#f08a3c',cx-17,cy-2,34,4)}
+else if(pt==='bulb'){if(lit){x.globalAlpha=.3+.2*Math.sin(t/200);disc(x,'#ffe066',cx,cy,21);x.globalAlpha=1}disc(x,'#ffe066',cx,cy,9);disc(x,'#fff4a8',cx-3,cy-3,4)}
+else if(pt==='bulbB'){disc(x,'#9aa4b0',cx,cy,9);R_(x,'#3a3560',cx-4,cy-7,2,9);R_(x,'#3a3560',cx+2,cy-3,2,8)}}
+if(lit&&flow4T){const el=t-flow4T,P=2*((RX-LX)+(BY-TY));if(el<2800){let d=(el/2800)*P;const pts=[[LX,TY],[RX,TY],[RX,BY],[LX,BY],[LX,TY]];for(let s=0;s<4;s++){const ax=pts[s][0],ay=pts[s][1],bx=pts[s+1][0],by=pts[s+1][1],L=Math.abs(bx-ax)+Math.abs(by-ay);if(d<=L){const px=ax+(bx-ax)*(L?d/L:0),py=ay+(by-ay)*(L?d/L:0);x.globalAlpha=.35;disc(x,'#fff4a8',px,py,13);x.globalAlpha=1;disc(x,'#fffbe8',px,py,6);break}d-=L}}}}
 function exDraw(t){const gt='【ステージ'+AREA+' '+AREAS[AREA].name+'】 '+goalText();if(gt!==lastGoal){lastGoal=gt;document.getElementById('goal').textContent=gt}
  const cv=exCv,x=cv.getContext('2d');x.setTransform(cv.width/VW,0,0,cv.width/VW,0,0);x.imageSmoothingEnabled=false;
  const L=leader();xcam[0]=Math.max(0,Math.min(MW*TS-VW,Math.round(L.x-VW/2)));xcam[1]=Math.max(0,Math.min(MH*TS-VH,Math.round(L.y-VH/2-24)));
- if(!mapCv)mapCv=makeMap();x.fillStyle='#2a1f3d';x.fillRect(0,0,VW,VH);x.save();x.translate(-xcam[0],-xcam[1]);x.drawImage(mapCv,0,0);
+ if(!mapCv)mapCv=makeMap();x.fillStyle='#2a1f3d';x.fillRect(0,0,VW,VH);x.save();x.translate(-xcam[0],-xcam[1]);x.drawImage(mapCv,0,0);if(AREA===4)drawCircuit(x,t);
  if(AREA===8&&EX.f.frz8){for(let ty=0;ty<MH;ty++)for(let tx=0;tx<MW;tx++){if(MAP[ty][tx]==='~'){x.fillStyle='rgba(214,239,255,.55)';x.fillRect(tx*TS,ty*TS,TS,TS);x.fillStyle='rgba(255,255,255,.5)';x.fillRect(tx*TS+8,ty*TS+10,10,2);x.fillRect(tx*TS+26,ty*TS+30,12,2)}}}
  const list=[];
  for(const o of OBJ){if(!objOn(o)||(o.id==='fragY'&&EX.f.yellow))continue;list.push({k:o.id==='gate'||o.id==='bush'&&EX.f.bush?-1:o.y*TS+TS-2,f:()=>drawObj(x,o,t)})}
