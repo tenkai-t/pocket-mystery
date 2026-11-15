@@ -647,7 +647,7 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   if(f.door9){say(['泉は にじ色に 光って いる。','3色が そろって、門が ひらいた。']);break}
   if(held.length<3){say(['不思議な 泉だ。','色水を 2つ 混ぜると、新しい 色が 生まれる。','色水が あと '+(3-held.length)+'色 たりない。']);break}
   say(['泉で 色水を 混ぜよう。【かんさつ】','まず 1色目を えらぼう。'],held.map(k=>CN[k]),i=>{const rest=held.filter((_,j)=>j!==i);
-   say(['2色目を えらぼう。'],rest.map(k=>CN[k]),j=>{const pair=[held[i],rest[j]].sort().join(''),RES={RB:['紫（むらさき）','mixP','#b07fe0'],BY:['緑（みどり）','mixG','#5fbf7a'],RY:['オレンジ','mixO','#f08a3c']}[pair],nm=RES[0],fk=RES[1];
+   say(['2色目を えらぼう。'],rest.map(k=>CN[k]),j=>{const pair=[held[i],rest[j]].sort().join(''),RES={BR:['紫（むらさき）','mixP','#b07fe0'],BY:['緑（みどり）','mixG','#5fbf7a'],RY:['オレンジ','mixO','#f08a3c']}[pair],nm=RES[0],fk=RES[1];
     if(f[fk]){sfx('pick');say(['生まれたのは '+nm+'。','その 色は もう 作って ある。','門の パネルを 見て、まだの 色を 作ろう。'])}
     else{f[fk]=true;discover('mix',L,'k',2);sfx('ok');
      if(f.mixP&&f.mixG&&f.mixO){f.door9=true;discover('door9',null,'',0);for(const c in EX.stats)addStat(c,'c',2);saveEx();sfx('gate');say([nm+'が 生まれた!【はっけん】','紫・緑・オレンジ、3色が そろった!','泉が にじ色に 光り、門が ゆっくり ひらいていく…!'])}
