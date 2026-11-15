@@ -42,6 +42,16 @@ canvas{image-rendering:pixelated;max-width:100%}
 #slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc}
 #slotRow .slotB.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
 #slotRow .slotB.on small{color:#ffe89a}
+#stgScr{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
+#stgScr[hidden]{display:none}
+#stgScr .stgT{font-size:19px;font-weight:700;letter-spacing:.1em;margin-bottom:14px}
+#stgList{display:flex;flex-direction:column;gap:8px;width:min(430px,94vw)}
+.stgB{font:inherit;font-size:15px;font-weight:700;text-align:left;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:9px 14px;cursor:pointer;line-height:1.3}
+.stgB small{display:block;font-size:11px;font-weight:400;color:#b3a6cc}
+.stgB.clr{border-color:#ffd24a}
+.stgB:disabled{opacity:.45;cursor:default}
+#stgClose{font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#241d4d;border:2px solid #57498f;border-radius:12px;padding:10px 34px;cursor:pointer;margin-top:16px}
+#stgBtnT{font:inherit;font-size:14px;font-weight:700;color:#ffe89a;background:#352a6e;border:2px solid #ffd24a;border-radius:12px;padding:9px 22px;cursor:pointer}
 #delBtn{font:inherit;font-size:12.5px;color:#f0a0a8;background:transparent;border:2px solid #7a4460;border-radius:12px;padding:7px 14px;cursor:pointer;margin-left:8px}
 #slotRow .slotB.del{border-color:#e0483e}
 #delBox{margin-top:10px;background:#352a6e;border:2px solid #e0483e;border-radius:12px;padding:10px 14px;color:#f4ecff;font-size:14px}
@@ -56,9 +66,10 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tsub">ドット絵の なぞとき たんけんゲーム</div>
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
-<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button><button id="delBtn">データを消す</button><div id="delBox" hidden><div id="delMsg"></div><button id="delYes">消す</button><button id="delNo">やめる</button></div>
+<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button><button id="delBtn">データを消す</button><div id="delBox" hidden><div id="delMsg"></div><button id="delYes">消す</button><button id="delNo">やめる</button></div><div><button id="stgBtnT">ステージを えらぶ</button></div>
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
+<div id="stgScr" hidden><div class="stgT">ステージを えらぶ</div><div id="stgList"></div><button id="stgClose">とじる</button></div>
 <div class="w">
 <h1>ポケットミステリー</h1>
 <div class="tabs" id="mtabs"><button data-m="room" class="on">マイルーム</button><button data-m="explore">たんけん</button></div>
@@ -86,7 +97,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="lab" id="goal" style="margin-top:6px;text-align:left"></div>
 <div class="slots" id="lead" style="margin:8px 0"></div>
 <button id="dA" class="abtn">しらべる</button>
-<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button></div> <div class="mini" style="margin-top:6px"><button id="tbtn">タイトル画面に もどる</button></div>
+<div class="mini"><button id="pbtn">へんせい</button><button id="nbtn">ぼうけんノート</button><button id="svbtn">セーブ</button><button id="snd">おと: ON</button></div> <div class="mini" style="margin-top:6px"><button id="stgbtn">ステージを えらぶ</button><button id="tbtn">タイトル画面に もどる</button></div>
 <div id="pty" hidden style="margin-top:10px"></div>
 <div id="note" hidden style="margin-top:10px"></div>
 <p class="lab" style="margin-top:10px">ゆびでがめんをなぞると、そのほうこうへあるきます。せんとうはありません。リーダーをきりかえて、とくぎをつかいわけよう。進み具合は自動で保存されます。「セーブ」をおすと、いまいる場所も保存されて、つぎはそこからつづけられます。</p>
@@ -295,7 +306,7 @@ const can=(c,a)=>ABIL[c].includes(a);
 const flyLine=(c,back)=>c==='witch'?(back?'ほうきに みんなを 乗せた。もどる?':'ほうきに みんなを 乗せて、ふわりと とびたった!'):(back?'みんなを つばさで つつんだ。もどる?':'みんなを つばさで つつんで、ふわりと とびたった!');
 function newFlags(){return{read:false,bush:false,pink:false,yellow:false,blue:false,pl:[null,null,null],gate:false,island:false,cleared:false,read2:false,crack:false,key:false,far:false,door2:false,cleared2:false,read3:false,st1:false,st2:false,st3:false,cmp:0,door3:false,cleared3:false,far3:false,read4:false,bat:false,wire:false,bulb:false,bulbB:false,bl:[null,null,null],door4:false,cleared4:false,far4:false,read5:false,mk1:false,mk2:false,mk3:false,key5:false,door5:false,cleared5:false,isle5:false,read6:false,mag:false,sort6:false,key6:false,door6:false,cleared6:false,far6:false,read7:false,w1:false,w2:false,w3f:false,w3:false,key7:false,door7:false,cleared7:false,read8:false,frz8:false,melt8:false,fruit8:false,door8:false,cleared8:false,read9:false,colR:false,colB:false,colY:false,mixP:false,mixG:false,mixO:false,door9:false,cleared9:false,far9:false,read10:false,stA:false,stB:false,stC:false,door10:false,cleared10:false,isle10:false}}
 function loadEx(){try{const r=JSON.parse(st.get('mv_explore1')||'null');if(r&&r.stats&&r.f){r.f=Object.assign(newFlags(),r.f);r.area=r.area||1;return fixEx(r)}}catch(e){}return{area:1,mute:false,stats:{},notes:[],f:newFlags()}}
-function fixEx(r){const o=['witch','kohaku','astra'];r.stats=r.stats||{};for(const c of ALL7)r.stats[c]=r.stats[c]||{k:0,c:0,b:0};if(!Array.isArray(r.order)||r.order.length!==3||!r.order.every(c=>ALL7.includes(c)))r.order=o;return r}
+function fixEx(r){const o=['witch','kohaku','astra'];r.stats=r.stats||{};for(const c of ALL7)r.stats[c]=r.stats[c]||{k:0,c:0,b:0};if(!Array.isArray(r.order)||r.order.length!==3||!r.order.every(c=>ALL7.includes(c)))r.order=o;if(!r.max)r.max=r.area||1;return r}
 let EX=fixEx(loadEx());function saveEx(){st.set('mv_explore1',JSON.stringify(EX))}
 const NOTES={tablet:['ひかりのじゅんばん','あさ(ピンク)→ひる(きいろ)→よる(あお)のじゅんで、ひかりがうまれる。'],bush:['においでさがす','しげみのおくに、かくれたみちがあった。においがてがかり。'],pink:['あけぼののかけら','かくれたみちのおくで、ピンクにひかるかけらをみつけた。'],yellow:['ひるのかけら','いけをこえて、きいろのかけらにとどいた。'],fail:['まちがいからまなぶ','ならべるじゅんばんがちがうと、ひかりがにごる。そらのうごきをおもいだそう。'],gate:['ほしのもん','3つのひかりを、うまれるじゅんにならべるともんがひらいた。'],tablet2:['ばいばいのきそく','1、2、4、8…は、まえのかずの2ばい。つぎは16。'],crack:['かべのわれめ','においをてがかりに、かべのわれめのおくに、かくれたくぼみをみつけた。'],key:['みずしょうのかぎ','くぼみのなかで、みずいろにひかるみずしょうをてにいれた。'],far:['たにをこえて','ふかいたにをとびこえて、むこうのだんにたどりついた。'],door:['ひかりのとびら','かずのきそくをみつけて、ダイヤルをあわせたら、とびらがひらいた。'],fail2:['あてずっぽうのよわさ','かずをなんとなくえらぶと、ひかりがよわい。きそくをさがしてからためそう。'],
 tablet3:['てんびんのきそく','てんびんは、重い方がさがる。2つずつくらべると、いちばん重いものがさがせる。'],stones:['3つのいし','まるい石、しかくい石、さんかくの石。重さは見た目ではわからない。'],scale:['くらべてわかる','てんびんで2つずつくらべると、重さのじゅんばんが見えてくる。'],fail3:['重さがたりない','台はいちばん重い石でないとうごかない。てんびんの結果をおもいだそう。'],door3:['重さの門','いちばん重い石を台にのせたら、重さで門がひらいた。'],
@@ -394,7 +405,17 @@ let AREA=EX.area||1,MAP=AREAS[AREA].build(),OBJ=AREAS[AREA].objs;
 function gateOpen(){const f=EX.f;return AREA===1?f.gate:AREA===2?f.door2:AREA===3?f.door3:AREA===4?f.door4:AREA===5?f.door5:AREA===6?f.door6:AREA===7?f.door7:AREA===8?f.door8:AREA===9?f.door9:f.door10}
 function farF(){return AREA===2?EX.f.far:!!EX.f['far'+AREA]}
 function isleF(){return AREA===1?EX.f.island:AREA===5?EX.f.isle5:AREA===8?EX.f.frz8:AREA===10?EX.f.isle10:false}
-function setArea(n){AREA=n;EX.area=n;EX.pos=null;MAP=AREAS[n].build();OBJ=AREAS[n].objs;mapCv=null;resetPos();saveEx();renderLeaders()}
+const STAGE_FLAGS={1:['read','bush','pink','yellow','blue','pl','island','gate'],2:['read2','crack','key','far','far2','door2'],3:['read3','st1','st2','st3','cmp','door3','far3'],4:['read4','bat','wire','bulb','bulbB','bl','door4','far4'],5:['read5','mk1','mk2','mk3','key5','door5','isle5'],6:['read6','mag','sort6','key6','door6','far6'],7:['read7','w1','w2','w3f','w3','key7','door7'],8:['read8','frz8','melt8','fruit8','door8'],9:['read9','colR','colB','colY','mixP','mixG','mixO','door9','far9'],10:['read10','stA','stB','stC','door10','isle10']};
+function clearedStage(n){return n===1?!!EX.f.cleared:!!EX.f['cleared'+n]}
+function doStageJump(n){if(clearedStage(n)){const d=newFlags();for(const k of STAGE_FLAGS[n])EX.f[k]=d[k]}setArea(n)}
+let stgCb=null;
+function openStageSel(cb){stgCb=cb||null;const ov=document.getElementById('stgScr'),ls=document.getElementById('stgList');ls.innerHTML='';
+for(let n=1;n<=10;n++){const b=document.createElement('button');b.className='stgB';const cl=clearedStage(n),cur=n===AREA,ok=cl||n<=(EX.max||1);
+b.innerHTML='ステージ'+n+' '+AREAS[n].name+'<small>'+(cl?'★ クリアずみ'+(cur?' ・ あそび中':' ・ もう一度 あそべる'):cur?'いま あそび中':ok?'とちゅうまで あそんだ':'まだ あそべない')+'</small>';
+b.disabled=!ok||(cur&&!cl);if(cl)b.classList.add('clr');b.onclick=()=>{ov.hidden=true;const f=stgCb;stgCb=null;if(f)f(n);else doStageJump(n)};ls.appendChild(b)}
+ov.hidden=false}
+document.getElementById('stgClose').onclick=()=>{document.getElementById('stgScr').hidden=true;stgCb=null};
+function setArea(n){AREA=n;EX.area=n;EX.max=Math.max(EX.max||1,n);EX.pos=null;MAP=AREAS[n].build();OBJ=AREAS[n].objs;mapCv=null;resetPos();saveEx();renderLeaders()}
 function tileAt(tx,ty){return(tx<0||ty<0||tx>=MW||ty>=MH)?'#':MAP[ty][tx]}
 function solidAt(px,py){const tx=Math.floor(px/TS),ty=Math.floor(py/TS);const t=tileAt(tx,ty);
  if(t==='#')return true;if(t==='~'&&!(AREA===8&&EX.f.frz8))return true;if(t==='v')return true;const bOpen=AREA===1?EX.f.bush:AREA===2?EX.f.crack:AREA===8?EX.f.melt8:false;if(t==='b'&&!bOpen)return true;if(t==='G')return !gateOpen();
@@ -885,6 +906,7 @@ function initExplore(){const cv=exCv;
  document.getElementById('dA').onclick=interact;document.getElementById('dlg').onclick=()=>advance();
  document.getElementById('nbtn').onclick=()=>{const n=document.getElementById('note');n.hidden=!n.hidden;if(!n.hidden)renderNote()};
  document.getElementById('svbtn').onclick=()=>{if(fly)return;const L=leader();EX.pos={a:AREA,x:Math.round(L.x),y:Math.round(L.y)};saveEx();sfx('pick');say(['ここまでの ぼうけんを セーブした!','つぎに あそぶときは、この場所から つづけられる。'])};
+document.getElementById('stgbtn').onclick=()=>{if(fly||dlg)return;openStageSel(null)};
 document.getElementById('tbtn').onclick=()=>{if(fly)return;say(['タイトル画面に もどりますか？','すすみ具合は 保存されています。'],['もどる','やめる'],i=>{if(i===0)location.reload()})};
  
  document.getElementById('pbtn').onclick=()=>{const p=document.getElementById('pty');p.hidden=!p.hidden;renderParty()};
@@ -905,6 +927,7 @@ setMode('room');
 db2.onclick=e=>{e.stopPropagation();delMode=!delMode;pendDel=0;document.getElementById('delBox').hidden=true;db2.textContent=delMode?'消すのを やめる':'データを消す';sr.querySelectorAll('.slotB').forEach(b=>b.classList.toggle('del',delMode))};
 document.getElementById('delNo').onclick=e=>{e.stopPropagation();pendDel=0;document.getElementById('delBox').hidden=true};
 document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}location.reload()};
+document.getElementById('stgBtnT').onclick=e=>{e.stopPropagation();openStageSel(n=>{doStageJump(n);go()})};
 const tb=document.getElementById('tsnd');const tlbl=()=>{tb.textContent='おと: '+(EX.mute?'OFF':'ON')};tlbl();
  tb.onclick=e=>{e.stopPropagation();EX.mute=!EX.mute;saveEx();tlbl();if(EX.mute)bgmStop();else{sfx('pick');bgmStart()}};
  let auto=false;try{auto=!!sessionStorage.getItem('mv_autostart');sessionStorage.removeItem('mv_autostart')}catch(e){}
