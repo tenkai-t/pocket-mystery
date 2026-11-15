@@ -284,8 +284,8 @@ function roomUi(){const pb=document.getElementById('ftabs');pb.innerHTML='';
 function moveSel(dx,dy){const it=room.items.find(i=>i.id===sel);if(!it)return;if(canPlace(it.t,it.x+dx,it.y+dy,it.id)){it.x+=dx;it.y+=dy;saveRoom()}else toast('そこにはおけません')}
 function initRoom(){
  const rc=roomCv;
- rc.addEventListener('pointerdown',e=>{const[lx,ly]=evPos(e);const it=hit(lx,ly);if(it){sel=it.id;drag={id:it.id,gx:lx-it.x*CS,gy:ly-FY0-it.y*CS};rc.setPointerCapture(e.pointerId)}else sel=null;roomUi()});
- rc.addEventListener('pointermove',e=>{if(!drag)return;const[lx,ly]=evPos(e);const it=room.items.find(i=>i.id===drag.id);if(!it)return;const m=FUR[it.t];
+ rc.addEventListener('pointerdown',e=>{if(document.getElementById('editUI').hidden)return;const[lx,ly]=evPos(e);const it=hit(lx,ly);if(it){sel=it.id;drag={id:it.id,gx:lx-it.x*CS,gy:ly-FY0-it.y*CS};rc.setPointerCapture(e.pointerId)}else sel=null;roomUi()});
+ rc.addEventListener('pointermove',e=>{if(!drag||document.getElementById('editUI').hidden)return;const[lx,ly]=evPos(e);const it=room.items.find(i=>i.id===drag.id);if(!it)return;const m=FUR[it.t];
   const nx=Math.max(0,Math.min(COLS-m.fw,Math.round((lx-drag.gx)/CS))),ny=Math.max(0,Math.min(ROWS-m.fh,Math.round((ly-FY0-drag.gy)/CS)));if((nx!==it.x||ny!==it.y)&&canPlace(it.t,nx,ny,it.id)){it.x=nx;it.y=ny}});
  const end=()=>{if(drag){drag=null;saveRoom();roomUi()}};rc.addEventListener('pointerup',end);rc.addEventListener('pointercancel',end);
  document.getElementById('mL').onclick=()=>moveSel(-1,0);document.getElementById('mR').onclick=()=>moveSel(1,0);document.getElementById('mU').onclick=()=>moveSel(0,-1);document.getElementById('mD').onclick=()=>moveSel(0,1);
