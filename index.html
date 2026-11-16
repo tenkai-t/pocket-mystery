@@ -21,7 +21,11 @@ canvas{image-rendering:pixelated;max-width:100%}
 .mini{display:flex;gap:6px;margin-top:12px}.mini button{font-size:12px}
 .sv{margin-top:14px;font-size:12px;color:var(--sub)}.row{display:flex;gap:6px;margin-top:6px}.row div{flex:1;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px;text-align:center;font-size:12px}
 .row b{display:block;margin-bottom:4px}.row button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:5px 8px;margin:0 2px}
-.ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ctl button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 4px}.ctl #rflip,.ctl #rdel,.ctl #rsize{grid-column:span 2}.ctl button:disabled{opacity:.4}#dlg{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,250,240,.96);color:#2a1f3d;border:2px solid #2a1f3d;border-radius:12px;padding:10px;font-size:14px;line-height:1.5}#dlg button{display:block;width:100%;margin-top:6px;font:inherit;padding:8px;border:2px solid #d8505e;background:#fff;color:#2a1f3d;border-radius:10px}.dnx{text-align:right;color:#d8505e;font-size:12px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.ptg button{font:inherit;font-size:12px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px}.ptg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ctl button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 4px}.ctl #rflip,.ctl #rdel,.ctl #rsize{grid-column:span 2}.ctl button:disabled{opacity:.4}#exLook{position:absolute;top:8px;right:max(8px,calc(50% - 184px));z-index:5;font:inherit;font-weight:700;font-size:14px;color:#2a1f3d;background:rgba(255,255,255,.94);border:2px solid rgba(42,31,61,.55);border-radius:9px;padding:5px 16px;cursor:pointer}
+#exLook[hidden]{display:none}
+#dA.glow{animation:daGlow .8s ease-in-out infinite alternate}
+@keyframes daGlow{from{box-shadow:0 0 2px 0 rgba(255,210,74,.25)}to{box-shadow:0 0 16px 6px rgba(255,210,74,.95);filter:brightness(1.16)}}
+#dlg{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,250,240,.96);color:#2a1f3d;border:2px solid #2a1f3d;border-radius:12px;padding:10px;font-size:14px;line-height:1.5}#dlg button{display:block;width:100%;margin-top:6px;font:inherit;padding:8px;border:2px solid #d8505e;background:#fff;color:#2a1f3d;border-radius:10px}.dnx{text-align:right;color:#d8505e;font-size:12px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.ptg button{font:inherit;font-size:12px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px}.ptg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .slots button{display:flex;align-items:center;justify-content:center;gap:6px}.ptg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.cic{image-rendering:pixelated;flex:none;width:auto}.slots .cic{height:34px}.ptg .cic{height:46px}.ptg small{font-size:10px;opacity:.85}.abtn{display:block;width:100%;margin:8px 0 0;font:inherit;font-size:16px;color:#fff;background:var(--acc);border:2px solid var(--acc);border-radius:14px;padding:14px 0}.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:300px;margin:0 auto}.pad button{font:inherit;font-size:18px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 0;touch-action:none;user-select:none}.pad #dA{font-size:13px;background:var(--acc);color:#fff;border-color:var(--acc)}.nrow{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px;font-size:12px;line-height:1.5}
 #titleScr{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;text-align:center;padding:24px 18px;transition:opacity .55s ease;overflow:hidden}
 #titleScr.hide{opacity:0;pointer-events:none}
@@ -127,6 +131,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 
 <div id="pg3" hidden>
 <div style="position:relative"><canvas id="ex" style="width:min(100%,384px);margin:0 auto;image-rendering:pixelated;border-radius:14px;border:2px solid var(--line);display:block;touch-action:none"></canvas>
+<button id="exLook" hidden>しらべる</button>
 <div id="dlg" hidden></div></div>
 <div class="lab" id="goal" style="margin-top:6px;text-align:left"></div>
 <div class="slots" id="lead" style="margin:8px 0"></div>
@@ -1022,8 +1027,8 @@ function exDraw(t){const gt='【ステージ'+AREA+' '+AREAS[AREA].name+'】 '+g
  if(AREA===5){const cx=38,cy=42;x.globalAlpha=.92;disc(x,'#2a1f3d',cx,cy,24);x.globalAlpha=1;x.strokeStyle='#f5e6c4';x.lineWidth=2;x.beginPath();x.arc(cx,cy,24,0,6.3);x.stroke();
   x.fillStyle='#ff8a95';x.font='bold 11px sans-serif';x.textAlign='center';x.fillText('北',cx,cy-13);x.fillStyle='#cfeeff';x.fillText('南',cx,cy+21);x.fillText('東',cx+16,cy+4);x.fillText('西',cx-16,cy+4);
   const Ld=leader(),ang=Ld.view==='up'?0:Ld.view==='down'?Math.PI:Ld.face>0?Math.PI/2:-Math.PI/2;x.save();x.translate(cx,cy);x.rotate(ang);x.fillStyle='#ffd24a';x.beginPath();x.moveTo(0,-11);x.lineTo(4,2);x.lineTo(-4,2);x.closePath();x.fill();x.restore()}
- const n=!dlg&&!fly&&nearest();if(n){x.fillStyle='rgba(255,255,255,.9)';x.fillRect(VW-92,8,84,24);x.fillStyle='#2a1f3d';x.font='bold 14px sans-serif';x.textAlign='center';x.fillText('しらべる',VW-50,25)}}
-let lastGoal='';
+ const n=!dlg&&!fly&&nearest();if(n!==lookN){lookN=n;const eb=document.getElementById('exLook');if(eb)eb.hidden=!n;const db=document.getElementById('dA');if(db)db.classList.toggle('glow',!!n)}}
+let lastGoal='';let lookN=null;
 function goalText(){const f=EX.f;if(AREA===1){if(f.cleared)return 'もくひょう: ほしの もんから つぎの せかいへ いこう';if(f.gate)return 'もくひょう: ひらいた ほしの もんへ すすもう';const n=(f.pink?1:0)+(f.yellow?1:0)+(f.blue?1:0);return n<3?'もくひょう: ひかる かけらを 3つ あつめよう（'+n+'/3）':'もくひょう: かけらを だいざに ならべよう（じゅんばんが ヒント）'}
  if(AREA===3){if(f.cleared3)return 'てんびんのおか クリア!';if(f.door3)return 'もくひょう: ひらいた 丘の門へ すすもう';const n=(f.st1?1:0)+(f.st2?1:0)+(f.st3?1:0);return 'もくひょう: いちばん重い 石を 見つけよう（石 '+n+'/3、くらべた '+(f.cmp||0)+'回）'}
  if(AREA===4){if(f.cleared4)return 'でんきの回廊 クリア!';if(f.door4)return 'もくひょう: 明るく なった 回廊の門へ';const n=(f.bat?1:0)+(f.wire?1:0)+(f.bulb?1:0);return 'もくひょう: 回路の 部品を あつめよう（'+n+'/3）'}
@@ -1098,7 +1103,7 @@ function initExplore(){const cv=exCv;
  cv.addEventListener('pointerdown',e=>{if(dlg||fly)return;e.preventDefault();stick.id=e.pointerId;try{cv.setPointerCapture(e.pointerId)}catch(_){}stickDown(e.clientX,e.clientY)});
  cv.addEventListener('pointermove',e=>{if(e.pointerId===stick.id)stickMove(e.clientX,e.clientY)});
  const up=e=>{if(e.pointerId===stick.id){stick.id=null;stickUp()}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
- document.getElementById('dA').onclick=interact;document.getElementById('dlg').onclick=()=>advance();
+ document.getElementById('dA').onclick=interact;document.getElementById('exLook').onclick=interact;document.getElementById('dlg').onclick=()=>advance();
  document.getElementById('nbtn').onclick=()=>{const n=document.getElementById('note');n.hidden=!n.hidden;if(!n.hidden)renderNote()};
  document.getElementById('svbtn').onclick=()=>{if(fly)return;const L=leader();EX.pos={a:AREA,x:Math.round(L.x),y:Math.round(L.y)};saveEx();sfx('pick');say(['ここまでの ぼうけんを セーブした!','つぎに あそぶときは、この場所から つづけられる。'])};
 document.getElementById('stgbtn').onclick=()=>{if(fly||dlg)return;openStageSel(null)};
