@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><title>ポケットミステリー</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#fff4dc;--card:#fffaf0;--ink:#2a1f3d;--sub:#7a6a8a;--acc:#d8505e;--line:#e8d9b8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1830;--card:#2a2342;--ink:#f4ecff;--sub:#b3a6cc;--line:#413862}}
-html,body{height:100%;margin:0}body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+html,body{height:100%;margin:0}*{touch-action:manipulation}body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}input,textarea{-webkit-user-select:text;user-select:text}body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
 .w{max-width:480px;margin:0 auto;padding:12px 14px 28px}h1{font-size:17px;margin:4px 0 10px}
 .stage{flex-wrap:wrap;gap:6px}.tabs{display:flex;gap:6px;margin-bottom:10px}#ctabs{flex-wrap:wrap}#ctabs button{flex:1 1 22%;padding:8px 2px;font-size:13px}.tabs button,.slots button,.mini button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 6px;flex:1}
 .tabs button.on,.slots button.on{border-color:var(--acc);background:var(--acc);color:#fff;font-weight:700}
@@ -44,6 +44,14 @@ canvas{image-rendering:pixelated;max-width:100%}
 #slotRow .slotB.on small{color:#ffe89a}
 #stgScr{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
 #stgScr[hidden]{display:none}
+#memScr{position:fixed;inset:0;z-index:122;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
+#memScr[hidden]{display:none}
+#memScr .stgT{font-size:19px;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+#memGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:360px;margin-top:10px}
+.memB{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.memB.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.memB .cic{height:52px}
+#memScr .tnote{color:#cfc4f5;font-size:12px}
 #drawScr{position:fixed;inset:0;z-index:130;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:20px 14px;overflow-y:auto}
 #drawScr[hidden]{display:none}
 #picScr{position:fixed;inset:0;z-index:125;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:20px 14px;overflow-y:auto}
@@ -83,6 +91,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div id="stgScr" hidden><div class="stgT">ステージを えらぶ</div><div id="stgList"></div><button id="stgClose">とじる</button></div>
+<div id="memScr" hidden><div class="stgT">マイルームの メンバー</div><div id="memCnt" class="tnote"></div><div id="memGrid"></div><div id="memMsg" class="tnote" style="margin-top:10px"></div><div class="drow"><button id="memClose">とじる</button></div></div>
 <div id="drawScr" hidden><div class="stgT">おえかき</div>
 <div class="drow" style="margin:0 0 8px"><button id="dYoko">よこの絵</button><button id="dTate">たての絵</button></div>
 <canvas id="drawCv" width="240" height="168"></canvas>
@@ -105,7 +114,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 </div>
 <div id="pg2">
 <canvas id="room" style="width:min(100%,384px);margin:0 auto;image-rendering:pixelated;touch-action:none;border-radius:14px;border:2px solid var(--line);display:block"></canvas>
-<div class="mini" style="margin:8px 0"><button id="editToggle">配置を変える</button></div>
+<div class="mini" style="margin:8px 0"><button id="editToggle">配置を変える</button><button id="memBtn">メンバーをかえる</button></div>
 <div id="editUI" hidden>
 <div class="lab" id="selname" style="margin:6px 0">ものをタップしてえらぶ</div>
 <div class="ctl" id="ctl"><button id="mL">◀</button><button id="mU">▲</button><button id="mD">▼</button><button id="mR">▶</button><button id="rflip">むきをかえる</button><button id="rsize">おおきさ</button><button id="rdel">かたづける</button></div>
@@ -293,8 +302,8 @@ function loadRoom(){try{const r=JSON.parse(st.get('mv_room2')||'null');if(r&&r.i
    if(bad(it.x,it.y)){let done=false;for(let yy=0;yy<=WGR-p.h&&!done;yy++)for(let xx=0;xx<=GC-p.w&&!done;xx++)if(!bad(xx,yy)){it.x=xx;it.y=yy;done=true}}}
   for(const it of r.items){if(it.z==='w')continue;const p=fp(it);const bad=(x,y)=>{if(x<0||y<0||x+p.w>GC||y+p.h>GR)return true;const rc={x,y,w:p.w,h:p.h};return r.items.some(o=>o!==it&&o.z!=='w'&&!!FUR[o.t].rug===!!FUR[it.t].rug&&overlaps(rc,{x:o.x,y:o.y,...fp(o)}))};
    if(bad(it.x,it.y)){let done=false;for(let yy=0;yy<=GR-p.h&&!done;yy++)for(let xx=0;xx<=GC-p.w&&!done;xx++)if(!bad(xx,yy)){it.x=xx;it.y=yy;done=true}if(!done){it.x=Math.max(0,Math.min(it.x,GC-p.w));it.y=Math.max(0,Math.min(it.y,GR-p.h))}}}
-  return r}}}catch(e){}return defaultRoom()}
-function defaultRoom(){return{n:12,v:2,items:[{id:'i1',t:'tansu',x:10,y:0,r:0},{id:'i2',t:'sofa',x:2,y:7,r:0},{id:'i3',t:'scope',x:27,y:0,r:0},{id:'i4',t:'wagon',x:24,y:7,r:0},{id:'i5',t:'phouse',x:23,y:11,r:0},{id:'i6',t:'gaku',x:0,y:2,r:0,z:'w'},{id:'i7',t:'tokei',x:24,y:2,r:0,z:'w'},{id:'i8',t:'bed',x:16,y:0,r:0},{id:'i9',t:'gramo',x:6,y:1,r:0},{id:'i10',t:'dresser',x:12,y:11,r:0},{id:'i11',t:'chair',x:23,y:1,r:0},{id:'i12',t:'pot',x:0,y:12,r:0}]}}
+  if(!Array.isArray(r.mem))r.mem=['witch','kohaku','astra'];r.mem=r.mem.filter((c,i,a)=>['ribbon','witch','maid','neko','miko','kohaku','astra','rake','puppet','onsen','kiyomebi'].indexOf(c)>=0&&a.indexOf(c)===i).slice(0,3);if(!r.mem.length)r.mem=['witch','kohaku','astra'];return r}}}catch(e){}return defaultRoom()}
+function defaultRoom(){return{n:12,v:2,mem:['witch','kohaku','astra'],items:[{id:'i1',t:'tansu',x:10,y:0,r:0},{id:'i2',t:'sofa',x:2,y:7,r:0},{id:'i3',t:'scope',x:27,y:0,r:0},{id:'i4',t:'wagon',x:24,y:7,r:0},{id:'i5',t:'phouse',x:23,y:11,r:0},{id:'i6',t:'gaku',x:0,y:2,r:0,z:'w'},{id:'i7',t:'tokei',x:24,y:2,r:0,z:'w'},{id:'i8',t:'bed',x:16,y:0,r:0},{id:'i9',t:'gramo',x:6,y:1,r:0},{id:'i10',t:'dresser',x:12,y:11,r:0},{id:'i11',t:'chair',x:23,y:1,r:0},{id:'i12',t:'pot',x:0,y:12,r:0}]}}
 let room=loadRoom(),sel=null,raf=null,lastT=0,drag=null,toastT=0,toastMsg='';
 for(const it of room.items)if(it.t==='photo'&&photos[it.pid]&&!photos[it.pid].o)photos[it.pid].o=it.o;
 function saveRoom(){st.set('mv_room2',JSON.stringify(room))}
@@ -327,7 +336,7 @@ function setAnim(o,a){if(o.anim!==a){o.anim=a;o.fi=0;o.ft=0}}
 function curCell(o){return[Math.max(0,Math.min(GC-1,Math.floor(o.x/GU))),Math.max(0,Math.min(GR-1,Math.floor((o.y-FY0)/GU)))]}
 function adjacent(it,b){const p=fp(it),r=[];for(let j=-1;j<=p.h;j++)for(let i=-1;i<=p.w;i++){if((i>=0&&i<p.w)&&(j>=0&&j<p.h))continue;if(i!==-1&&i!==p.w&&j!==-1&&j!==p.h)continue;const x=it.x+i,y=it.y+j;if(x>=0&&y>=0&&x<GC&&y<GR&&!b[y][x])r.push([x,y])}return r}
 function decide(o,b){const[cx,cy]=curCell(o);const r=Math.random();
- const beds=room.items.filter(i=>i.t===(o.c==='kohaku'||o.c==='astra'?'phouse':'bed')&&!chars.some(p=>p!==o&&p.bed===i.id));
+ const beds=room.items.filter(i=>i.t===(o.c==='kohaku'||o.c==='astra'?'phouse':'bed')&&!chars.some(p=>p!==o&&room.mem.includes(p.c)&&p.bed===i.id));
  const things=room.items.filter(i=>i.z!=='w'&&!FUR[i.t].rug&&i.t!=='bed');
  let goal=null,after='idle',bed=null;
  if(beds.length&&r<.3){const it=beds[Math.floor(Math.random()*beds.length)];const g=adjacent(it,b);if(g.length){goal=g;after='sleep';bed=it.id}}
@@ -352,7 +361,7 @@ function stepChar(o,dt,b){
   if(d<=st_){o.x=tx;o.y=ty;o.path.shift();if(!o.path.length)arrive(o)}else{o.x+=dx/d*st_;o.y+=dy/d*st_}return}
  o.t-=dt;
  if(o.t<=0){if(o.state==='sleep')wake(o,b);else if(o.state==='joy'||o.state==='idle'||o.state==='special')decide(o,b)}}
-function roomUpdate(dt){const b=blockedMap();for(const o of chars){if(!o.init){const f=freeCells(b);let q=f[Math.floor(Math.random()*f.length)];const c=cellC(q[0],q[1]);o.x=c[0];o.y=c[1];o.init=true}stepChar(o,dt,b)}}
+function roomUpdate(dt){const b=blockedMap();for(const o of chars){if(!room.mem.includes(o.c))continue;if(!o.init){const f=freeCells(b);let q=f[Math.floor(Math.random()*f.length)];const c=cellC(q[0],q[1]);o.x=c[0];o.y=c[1];o.init=true}stepChar(o,dt,b)}}
 let bgc=null,bgBand='';
 function hsh(a,b,c){let h=(a*374761393+b*668265263+(c||0)*2147483647)|0;h=(h^(h>>>13))*1274126177|0;return((h^(h>>>16))>>>0)/4294967296}
 function skyBand(){const h=new Date().getHours();return h<5?'night':h<7?'dawn':h<11?'morning':h<16?'noon':h<19?'dusk':'night'}
@@ -390,7 +399,7 @@ function roomDraw(){const cv=roomCv,x=cv.getContext('2d');x.setTransform(cv.widt
  if(sel&&!document.getElementById('editUI').hidden){x.fillStyle='rgba(255,255,255,.16)';for(let j=0;j<GR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,FY0+j*GU,GU,GU);for(let j=0;j<WGR;j++)for(let i=0;i<GC;i++)if((i+j)%2===0)x.fillRect(i*GU,j*GU,GU,GU);const sit=room.items.find(i=>i.id===sel);if(sit&&sit.z==='w'){x.fillStyle='rgba(216,80,94,.20)';x.fillRect(WINX,0,WINW,WINH)}}
  const list=[];
  for(const it of room.items){if(it.z==='w'){const s=itemSpr(it);x.drawImage(s.cv,it.x*GU-1,it.y*GU-1);if(it.t==='tokei')clockHands(x,it.x*GU-1,it.y*GU-1,it.r||0);continue}const m=FUR[it.t],p=fp(it);list.push({k:m.rug?-1:FY0+(it.y+p.h)*GU,f:()=>{const s=furnSpr(it.t,it.r||0);x.drawImage(s.cv,it.x*GU+(p.w*GU-s.w)/2-1,FY0+(it.y+p.h)*GU-s.h-1)}})}
- for(const o of chars){const sleeping=o.state==='sleep';const A=D.chars[o.c].anims[o.anim];const idxs=o.anim==='sleep'?(D.chars[o.c].sleepIdx||[1,2,3,4,5]):A.map((_,i)=>i);const idx=idxs[o.fi%idxs.length];const an2=o.state==='walk'?o.anim+vsuf(o.c,o.view):o.anim;
+ for(const o of chars){if(!room.mem.includes(o.c))continue;const sleeping=o.state==='sleep';const A=D.chars[o.c].anims[o.anim];const idxs=o.anim==='sleep'?(D.chars[o.c].sleepIdx||[1,2,3,4,5]):A.map((_,i)=>i);const idx=idxs[o.fi%idxs.length];const an2=o.state==='walk'?o.anim+vsuf(o.c,o.view):o.anim;
   list.push({k:sleeping?o.y+60:o.y,f:()=>{const s=charSpr(o.c,an2,idx);const base=sleeping?s.base:footBase(o.c);
    if(!sleeping){x.fillStyle='rgba(42,31,61,.22)';x.beginPath();x.ellipse(o.x,o.y-1,(D.chars[o.c].w||28)>40?13:9,3,0,0,7);x.fill()}
    const q=cv.width/RW,dy=Math.round(o.y*q-base),X0=Math.round(o.x*q);x.save();x.setTransform(1,0,0,1,0,0);if(o.face<0){x.translate(X0,0);x.scale(-1,1);x.drawImage(s.cv,-s.cx,dy)}else x.drawImage(s.cv,X0-s.cx,dy);x.restore()}})}
@@ -404,7 +413,7 @@ function evPos(e){const r=roomCv.getBoundingClientRect();return[(e.clientX-r.lef
 function roomUi(){const pb=document.getElementById('ftabs');pb.innerHTML='';
  for(const t of FORDER){const m=FUR[t];const b=document.createElement('button');b.className='it';const s=furnSpr(t,0);const cv=document.createElement('canvas');const sc=Math.min(80/s.cv.width,44/s.cv.height);cv.width=Math.round(s.cv.width*sc);cv.height=Math.round(s.cv.height*sc);const c2=cv.getContext('2d');c2.imageSmoothingEnabled=true;c2.drawImage(s.cv,0,0,cv.width,cv.height);b.appendChild(cv);const sp=document.createElement('span');sp.textContent=m.name;b.appendChild(sp);
   b.onclick=()=>{if(room.items.length>=24){toast('これいじょうおけません');return}const probe={id:'',t,r:0},p=fp(probe);let ok=false;for(let y=0;y<=GR-p.h&&!ok;y++)for(let x=0;x<=GC-p.w&&!ok;x++){let free=canPlace(probe,x,y,null);
-   if(free&&!chars.some(o=>{const[cx,cy]=curCell(o);return o.state!=='sleep'&&!m.rug&&cx>=x&&cx<x+p.w&&cy>=y&&cy<y+p.h})){room.n++;const id='i'+room.n;room.items.push({id,t,x,y,r:0});sel=id;ok=true}}
+   if(free&&!chars.some(o=>{const[cx,cy]=curCell(o);return room.mem.includes(o.c)&&o.state!=='sleep'&&!m.rug&&cx>=x&&cx<x+p.w&&cy>=y&&cy<y+p.h})){room.n++;const id='i'+room.n;room.items.push({id,t,x,y,r:0});sel=id;ok=true}}
    if(!ok)toast('あきがありません');saveRoom();roomUi()};pb.appendChild(b)}
  const wl=document.createElement('div');wl.className='lab';wl.style.gridColumn='1 / -1';wl.style.marginTop='6px';wl.textContent='かべにかける';pb.appendChild(wl);
  for(const t of WORDER){const m=FUR[t];const b=document.createElement('button');b.className='it';const s=furnSpr(t,0);const cv=document.createElement('canvas');const sc=Math.min(80/s.cv.width,44/s.cv.height);cv.width=Math.round(s.cv.width*sc);cv.height=Math.round(s.cv.height*sc);const c2=cv.getContext('2d');c2.imageSmoothingEnabled=true;c2.drawImage(s.cv,0,0,cv.width,cv.height);b.appendChild(cv);const sp=document.createElement('span');sp.textContent=m.name;b.appendChild(sp);
@@ -438,6 +447,19 @@ function initRoom(){
   im.src=url});
  document.getElementById('rrst').onclick=()=>{room=defaultRoom();sel=null;saveRoom();roomUi()};
  document.getElementById('editToggle').onclick=()=>{const e=document.getElementById('editUI'),b=document.getElementById('editToggle');e.hidden=!e.hidden;b.textContent=e.hidden?'配置を変える':'配置をおわる';if(e.hidden){sel=null;drag=null;roomUi()}}}
+let memWired=false;
+function openMemPicker(){const ov=document.getElementById('memScr');ov.hidden=false;const grid=document.getElementById('memGrid');grid.innerHTML='';const cnt=document.getElementById('memCnt'),msg=document.getElementById('memMsg');msg.textContent='';
+ const render=()=>{cnt.textContent='マイルームに いるのは '+room.mem.length+'/3 人（タップで 入れ替え）';grid.querySelectorAll('button').forEach(b=>b.classList.toggle('on',room.mem.includes(b.dataset.c)))};
+ for(const o of chars){const c=o.c,b=document.createElement('button');b.className='memB';b.dataset.c=c;b.appendChild(charIcon(c));const sp=document.createElement('span');sp.textContent=NAMES[c];b.appendChild(sp);
+  b.onclick=()=>{const i=room.mem.indexOf(c);
+   if(i>=0){if(room.mem.length<=1){msg.textContent='1人は いてもらうね';return}room.mem.splice(i,1)}
+   else{if(room.mem.length>=3){msg.textContent='3人までだよ。先に 誰かを 外してね';return}room.mem.push(c)}
+   msg.textContent='';for(const q of chars)if(!room.mem.includes(q.c)){q.bed=null;q.state='idle';q.init=false;q.path=[]}
+   saveRoom();render()};
+  grid.appendChild(b)}
+ render();
+ if(!memWired){memWired=true;document.getElementById('memClose').onclick=()=>{ov.hidden=true}}}
+document.getElementById('memBtn').onclick=openMemPicker;
 function setMode(m){mode=m;document.getElementById('pg1').hidden=m!=='dress';document.getElementById('pg2').hidden=m!=='room';document.getElementById('pg3').hidden=m!=='explore';
  document.querySelectorAll('#mtabs button').forEach(b=>b.className=b.dataset.m===m?'on':'');
  clearTimeout(timer);cancelAnimationFrame(raf);cancelAnimationFrame(exRaf);dir.x=0;dir.y=0;if(typeof stick!=='undefined')stick.a=false;if(m==='dress'){fi=0;ui()}else if(m==='room'){lastT=0;roomUi();window.scrollTo(0,0);raf=requestAnimationFrame(roomLoop)}else{exLast=0;renderLeaders();renderDlg();exRaf=requestAnimationFrame(exLoop)}}
@@ -449,9 +471,10 @@ const ABIL={ribbon:['read','hint'],witch:['read','fly'],maid:['read','fix'],neko
 const ABNAME={read:'よむ',sniff:'かぐ',fly:'とぶ',hint:'ひらめき',fix:'なおす',light:'ひかり',ice:'こおり',fire:'ほのお',clean:'きよめる',shadow:'かげ',water:'みず',wind:'かぜ'};
 const can=(c,a)=>ABIL[c].includes(a);
 const flyLine=(c,back)=>c==='witch'?(back?'ほうきに みんなを 乗せた。もどる?':'ほうきに みんなを 乗せて、ふわりと とびたった!'):(back?'みんなを つばさで つつんだ。もどる?':'みんなを つばさで つつんで、ふわりと とびたった!');
-function newFlags(){return{read:false,bush:false,pink:false,yellow:false,blue:false,pl:[null,null,null],gate:false,island:false,cleared:false,read2:false,crack:false,key:false,far:false,door2:false,cleared2:false,read3:false,st1:false,st2:false,st3:false,cmp:0,door3:false,cleared3:false,far3:false,read4:false,bat:false,wire:false,bulb:false,bulbB:false,bl:[null,null,null],door4:false,cleared4:false,far4:false,read5:false,mk1:false,mk2:false,mk3:false,key5:false,door5:false,cleared5:false,isle5:false,read6:false,mag:false,sort6:false,key6:false,door6:false,cleared6:false,far6:false,read7:false,w1:false,w2:false,w3f:false,w3:false,key7:false,door7:false,cleared7:false,cd7:{},carry7:null,box7:null,hs7:{hs_tanpopo:'tanpopo',hs_tonbo:'tonbo',hs_mikan:'mikan'},read8:false,frz8:false,melt8:false,fruit8:false,door8:false,cleared8:false,read9:false,colR:false,colB:false,colY:false,mixP:false,mixG:false,mixO:false,door9:false,cleared9:false,far9:false,read10:false,stA:false,stB:false,stC:false,door10:false,cleared10:false,isle10:false}}
+function newFlags(){return{read:false,bush:false,pink:false,yellow:false,blue:false,pl:[null,null,null],gate:false,island:false,cleared:false,read2:false,crack:false,key:false,far:false,door2:false,cleared2:false,read3:false,st1:false,st2:false,st3:false,cmp:0,door3:false,cleared3:false,far3:false,read4:false,bat:false,wire:false,bulb:false,bulbB:false,bl:[null,null,null],door4:false,cleared4:false,far4:false,read5:false,mk1:false,mk2:false,mk3:false,key5:false,door5:false,cleared5:false,isle5:false,read6:false,mag:false,sort6:false,key6:false,door6:false,cleared6:false,far6:false,read7:false,w1:false,w2:false,w3f:false,w3:false,key7:false,door7:false,cleared7:false,cd7:{},carry7:null,box7:null,hs7:{hs_tanpopo:'tanpopo',hs_tonbo:'tonbo',hs_mikan:'mikan'},gd7:{cd_sakura:'sakura',cd_suika:'suika',cd_himawari:'himawari',cd_choucho:'choucho',cd_semi:'semi',cd_kotatsu:'kotatsu',cd_momiji:'momiji',cd_kuri:'kuri',cd_yukidaru:'yukidaru'},read8:false,frz8:false,melt8:false,fruit8:false,door8:false,cleared8:false,read9:false,colR:false,colB:false,colY:false,mixP:false,mixG:false,mixO:false,door9:false,cleared9:false,far9:false,read10:false,stA:false,stB:false,stC:false,door10:false,cleared10:false,isle10:false}}
 function loadEx(){try{const r=JSON.parse(st.get('mv_explore1')||'null');if(r&&r.stats&&r.f){r.f=Object.assign(newFlags(),r.f);r.area=r.area||1;return fixEx(r)}}catch(e){}return{area:1,mute:false,stats:{},notes:[],f:newFlags()}}
-function fixEx(r){const o=['witch','kohaku','astra'];r.stats=r.stats||{};for(const c of ALL7)r.stats[c]=r.stats[c]||{k:0,c:0,b:0};if(!Array.isArray(r.order)||r.order.length!==3||!r.order.every(c=>ALL7.includes(c)))r.order=o;if(!r.max)r.max=r.area||1;return r}
+function fix7cards(f){const GD={cd_sakura:'sakura',cd_suika:'suika',cd_himawari:'himawari',cd_choucho:'choucho',cd_semi:'semi',cd_kotatsu:'kotatsu',cd_momiji:'momiji',cd_kuri:'kuri',cd_yukidaru:'yukidaru'},HS={hs_tanpopo:'tanpopo',hs_tonbo:'tonbo',hs_mikan:'mikan'},KEYS=['sakura','tanpopo','choucho','himawari','semi','suika','momiji','tonbo','kuri','yukidaru','kotatsu','mikan'];if(!f.gd7||typeof f.gd7!=='object')f.gd7={};if(!f.hs7||typeof f.hs7!=='object')f.hs7={};const home={};for(const id in GD)home[GD[id]]='gd:'+id;for(const id in HS)home[HS[id]]='hs:'+id;const valid=k=>KEYS.indexOf(k)>=0;for(const id in GD)if(!valid(f.gd7[id]))f.gd7[id]=null;for(const id in HS)if(!valid(f.hs7[id]))f.hs7[id]=null;const locs=k=>{const L=[];if(f.cd7&&f.cd7[k])L.push('cd7');if(f.carry7===k)L.push('carry');if(f.box7===k)L.push('box');for(const id in HS)if(f.hs7[id]===k)L.push('hs:'+id);for(const id in GD)if(f.gd7[id]===k)L.push('gd:'+id);return L};for(const k of KEYS){const L=locs(k);if(!L.length){const h=home[k],hs2=h.charAt(0)==='g'?f.gd7:f.hs7;if(hs2[h.slice(3)]==null)hs2[h.slice(3)]=k;else{let dn=false;for(const id in GD)if(f.gd7[id]==null){f.gd7[id]=k;dn=true;break}if(!dn)for(const id in HS)if(f.hs7[id]==null){f.hs7[id]=k;break}}}else if(L.length>1){let keep=null;for(const pr of['cd7','carry','box'])if(L.indexOf(pr)>=0){keep=pr;break}if(!keep)keep=L.find(l=>l.indexOf('hs:')===0)||home[k];for(const l of L){if(l===keep)continue;if(l==='carry')f.carry7=null;else if(l==='box')f.box7=null;else if(l.indexOf('hs:')===0)f.hs7[l.slice(3)]=null;else if(l.indexOf('gd:')===0)f.gd7[l.slice(3)]=null}}}}
+function fixEx(r){const o=['witch','kohaku','astra'];r.stats=r.stats||{};for(const c of ALL7)r.stats[c]=r.stats[c]||{k:0,c:0,b:0};if(!Array.isArray(r.order)||r.order.length!==3||!r.order.every(c=>ALL7.includes(c)))r.order=o;if(!r.max)r.max=r.area||1;if(r.f)fix7cards(r.f);return r}
 let EX=fixEx(loadEx());function saveEx(){st.set('mv_explore1',JSON.stringify(EX))}
 const NOTES={tablet:['ひかりのじゅんばん','あさ(ピンク)→ひる(きいろ)→よる(あお)のじゅんで、ひかりがうまれる。'],bush:['においでさがす','しげみのおくに、かくれたみちがあった。においがてがかり。'],pink:['あけぼののかけら','かくれたみちのおくで、ピンクにひかるかけらをみつけた。'],yellow:['ひるのかけら','いけをこえて、きいろのかけらにとどいた。'],fail:['まちがいからまなぶ','ならべるじゅんばんがちがうと、ひかりがにごる。そらのうごきをおもいだそう。'],gate:['ほしのもん','3つのひかりを、うまれるじゅんにならべるともんがひらいた。'],tablet2:['ばいばいのきそく','1、2、4、8…は、まえのかずの2ばい。つぎは16。'],crack:['かべのわれめ','においをてがかりに、かべのわれめのおくに、かくれたくぼみをみつけた。'],key:['みずしょうのかぎ','くぼみのなかで、みずいろにひかるみずしょうをてにいれた。'],far:['たにをこえて','ふかいたにをとびこえて、むこうのだんにたどりついた。'],door:['ひかりのとびら','かずのきそくをみつけて、ダイヤルをあわせたら、とびらがひらいた。'],fail2:['あてずっぽうのよわさ','かずをなんとなくえらぶと、ひかりがよわい。きそくをさがしてからためそう。'],
 tablet3:['てんびんのきそく','てんびんは、重い方がさがる。2つずつくらべると、いちばん重いものがさがせる。'],stones:['3つのいし','まるい石、しかくい石、さんかくの石。重さは見た目ではわからない。'],scale:['くらべてわかる','てんびんで2つずつくらべると、重さのじゅんばんが見えてくる。'],fail3:['重さがたりない','台はいちばん重い石でないとうごかない。てんびんの結果をおもいだそう。'],door3:['重さの門','いちばん重い石を台にのせたら、重さで門がひらいた。'],
@@ -558,7 +581,7 @@ let AREA=EX.area||1,MAP=AREAS[AREA].build(),OBJ=AREAS[AREA].objs;
 function gateOpen(){const f=EX.f;return AREA===1?f.gate:AREA===2?f.door2:AREA===3?f.door3:AREA===4?f.door4:AREA===5?f.door5:AREA===6?f.door6:AREA===7?f.door7:AREA===8?f.door8:AREA===9?f.door9:f.door10}
 function farF(){return AREA===2?EX.f.far:!!EX.f['far'+AREA]}
 function isleF(){return AREA===1?EX.f.island:AREA===5?EX.f.isle5:AREA===8?EX.f.frz8:AREA===10?EX.f.isle10:false}
-const STAGE_FLAGS={1:['read','bush','pink','yellow','blue','pl','island','gate'],2:['read2','crack','key','far','far2','door2'],3:['read3','st1','st2','st3','cmp','door3','far3'],4:['read4','bat','wire','bulb','bulbB','bl','door4','far4'],5:['read5','mk1','mk2','mk3','key5','door5','isle5'],6:['read6','mag','sort6','key6','door6','far6'],7:['read7','cd7','carry7','box7','hs7','key7','door7'],8:['read8','frz8','melt8','fruit8','door8'],9:['read9','colR','colB','colY','mixP','mixG','mixO','door9','far9'],10:['read10','stA','stB','stC','door10','isle10']};
+const STAGE_FLAGS={1:['read','bush','pink','yellow','blue','pl','island','gate'],2:['read2','crack','key','far','far2','door2'],3:['read3','st1','st2','st3','cmp','door3','far3'],4:['read4','bat','wire','bulb','bulbB','bl','door4','far4'],5:['read5','mk1','mk2','mk3','key5','door5','isle5'],6:['read6','mag','sort6','key6','door6','far6'],7:['read7','cd7','carry7','box7','hs7','gd7','key7','door7'],8:['read8','frz8','melt8','fruit8','door8'],9:['read9','colR','colB','colY','mixP','mixG','mixO','door9','far9'],10:['read10','stA','stB','stC','door10','isle10']};
 function clearedStage(n){return n===1?!!EX.f.cleared:!!EX.f['cleared'+n]}
 function doStageJump(n){if(clearedStage(n)){const d=newFlags();for(const k of STAGE_FLAGS[n])EX.f[k]=d[k]}setArea(n)}
 let stgCb=null;
@@ -598,7 +621,7 @@ function nearest(){const L=leader();let best=null,bd=1e9;const fx=L.view==='side
 if(isW||isV){const gap=fy>0?ty*TS-L.y:fy<0?(L.y-FHt)-(ty+1)*TS:fx>0?tx*TS-(L.x+FB):(L.x-FB)-(tx+1)*TS;
 if(gap<=6){let sx=tx,sy=ty,hit=null;while(true){sx+=fx;sy+=fy;if(sx<0||sy<0||sx>=MW||sy>=MH)break;const cc=MAP[sy][sx];if(cc===c)continue;hit=[sx,sy,cc];break}
 const onIsle=(MAP[Math.floor(L.y/TS)]||[])[Math.floor(L.x/TS)]==='i';if(hit&&(isW&&!onIsle?hit[2]==='i':hit[2]!=='#')){const dxp=hit[0]*TS+HT,dyp=hit[1]*TS+FT;best={id:isW?'shore':'cliff',x:tx,y:ty,dest:canStand(dxp,dyp)?[dxp,dyp]:null}}}}}return best}
-function objOn(o){const f=EX.f;if(o.id==='fragP'&&f.pink)return false;if(o.id==='fragY'&&f.yellow&&!f.island)return false;if(o.id==='keyc'&&f.key)return false;if(o.id==='chasm'&&farF())return false;if(o.id==='ledge'&&!farF())return false;if(o.id==='stone3'&&f.st3)return false;if(o.id==='bat'&&f.bat)return false;if(o.id==='bulbB'&&f.bulbB)return false;if(o.id==='bulb'&&f.bulb)return false;if(o.id==='colR'&&f.colR)return false;if(o.id==='colY'&&f.colY)return false;if(o.id==='iceWall'&&f.melt8)return false;if(o.id==='iceFlower'&&f.fruit8)return false;if(o.id==='sandSpot'&&f.mag)return false;if(o.id.indexOf('cd')===0&&o.k&&((f.cd7&&f.cd7[o.k])||f.carry7===o.k))return false;if(o.id.indexOf('hs')===0)return!!(f.hs7&&f.hs7[o.id]);return true}
+function objOn(o){const f=EX.f;if(o.id==='fragP'&&f.pink)return false;if(o.id==='fragY'&&f.yellow&&!f.island)return false;if(o.id==='keyc'&&f.key)return false;if(o.id==='chasm'&&farF())return false;if(o.id==='ledge'&&!farF())return false;if(o.id==='stone3'&&f.st3)return false;if(o.id==='bat'&&f.bat)return false;if(o.id==='bulbB'&&f.bulbB)return false;if(o.id==='bulb'&&f.bulb)return false;if(o.id==='colR'&&f.colR)return false;if(o.id==='colY'&&f.colY)return false;if(o.id==='iceWall'&&f.melt8)return false;if(o.id==='iceFlower'&&f.fruit8)return false;if(o.id==='sandSpot'&&f.mag)return false;if(o.id.indexOf('cd')===0)return!!(f.gd7&&f.gd7[o.id]);if(o.id.indexOf('hs')===0)return!!(f.hs7&&f.hs7[o.id]);return true}
 function hintText(){const f=EX.f;if(AREA===1){if(f.gate)return 'ほしの もんが ひらいた。むこうへ いってみよう!';if(!f.blue)return 'ほそい 道の さきに いしぶみが ある。よむのが とくいな 子と いってみよう。';if(!f.pink)return 'ひだりの しげみが きになる。かぎ分けの とくいな 子が いると いいな。';if(!f.yellow)return 'いけの まんなかに ひかる ものが あった。とべる 子の ちからで!';return 'うえの 3つの だいざに、ひかる かけらを じゅんばんに ならべよう。'}
  if(AREA===3){if(f.door3)return '丘の門が ひらいた。むこうへ いってみよう!';if(!f.read3)return '入口近くの 石碑を、よめる 子と しらべよう。';const n=(f.st1?1:0)+(f.st2?1:0)+(f.st3?1:0);if(n<3)return 'においの する 場所と、谷の むこうで、石を あと '+(3-n)+'つ さがそう。';if(!f.cmp)return '丘の まんなかの てんびんで、石を 2つずつ くらべよう。';return 'てんびんで くらべた 結果を 思いうかべて、いちばん重い 石を 谷の むこうの 台に のせよう。'}
  if(AREA===4){if(f.door4)return '回廊が 明るく なった。門へ すすもう!';if(!f.read4)return '壁の 図を、よめる 子と しらべよう。';if(!f.bat)return '入口の 近くに 電池が 落ちて いないか さがそう。';if(!f.wire)return '草むらの 金属の においを、かげる 子と たどろう。';if(!f.bulb)return '谷の むこうに 本物の 豆電球が あるはず。とべる 子と!';return '北の 地面の 回路図に 部品を 3つ はめよう。輪に なると 光るよ。'}
@@ -738,9 +761,9 @@ function interact(){if(advance())return;if(fly)return;const o=nearest();if(!o){s
   else say(['立て札に 季節の橋の ルールが ある。【かんさつ】','「ここは いつも 強い 風。空を 飛ぶことは できない。','季節の 言葉カード 12枚を 集めて、春・夏・秋・冬の 順に','橋の 区間へ はめよう」','では もんだい: 『春』の 言葉は どれ?【かせつ】'],['すいか','さくら','もみじ'],i=>{
    if(i===1){f.read7=true;discover('tablet7',L,'k',3);sfx('ok');say(['そう! 『さくら』は 春の 言葉。【はっけん】','カードは 風で 飛ばされて、岸に 散らばって いるよ。'])}
    else{addStat(L,'k',1);saveEx();sfx('bad');say(['…ちがうみたいだ。【じっけん】','『すいか』は 夏、『もみじ』は 秋の 言葉だよ。'])}});break;
- case'cd_sakura':case'cd_tanpopo':case'cd_choucho':case'cd_himawari':case'cd_semi':case'cd_suika':case'cd_momiji':case'cd_tonbo':case'cd_kuri':case'cd_yukidaru':case'cd_kotatsu':case'cd_mikan':{const c=card7(o.k);
-  if(f.carry7){const oc=card7(f.carry7);f.carry7=o.k;saveEx();sfx('pick');say(['『'+oc.w+'』を もとの 場所に もどして、','『'+c.w+'』の カードを 拾った!'])}
-  else{f.carry7=o.k;addStat(L,'c',1);saveEx();sfx('pick');say(['『'+c.w+'』の カードを 拾った!','どの 季節の 言葉かな? 橋の 区間へ 持って 行こう。'])}break}
+ case'cd_sakura':case'cd_tanpopo':case'cd_choucho':case'cd_himawari':case'cd_semi':case'cd_suika':case'cd_momiji':case'cd_tonbo':case'cd_kuri':case'cd_yukidaru':case'cd_kotatsu':case'cd_mikan':{const ck=f.gd7?f.gd7[o.id]:o.k,c=card7(ck);
+  if(f.carry7){const oc=card7(f.carry7);f.gd7[o.id]=f.carry7;f.carry7=ck;saveEx();sfx('pick');say(['『'+oc.w+'』を ここに 置いて、','『'+c.w+'』の カードを 拾った!'])}
+  else{f.gd7[o.id]=null;f.carry7=ck;addStat(L,'c',1);saveEx();sfx('pick');say(['『'+c.w+'』の カードを 拾った!','どの 季節の 言葉かな? 橋の 区間へ 持って 行こう。'])}break}
  case'hs_tanpopo':case'hs_tonbo':case'hs_mikan':{const ck=f.hs7?f.hs7[o.id]:o.k,c=card7(ck);
   if(!can(L,'sniff'))say(['草むらの 下に、風で 飛ばされた カードが かくれて いそうだ。','においの きく 子なら 見つけられるかも?']);
   else if(f.carry7){const oc=card7(f.carry7);f.hs7[o.id]=f.carry7;f.carry7=ck;saveEx();sfx('ok');say(['くんくん…。草むらから『'+c.w+'』の カードが 出てきた!【はっけん】','『'+oc.w+'』は 草むらに 隠しておいた。あとで また 探しに 来られるよ。'])}
@@ -939,7 +962,7 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
   if(!f.key6){x.globalAlpha=.5+.4*Math.sin(t/200);R_(x,'#ffd24a',X+22,Y+40,5,3);x.globalAlpha=1}}
  else if(o.id==='lock6'){const s=spr('lock6',40,54,g=>{R_(g,'#a9a4b8',8,8,24,42);R_(g,'#c9c4d8',8,8,5,42);R_(g,'#7d7890',27,8,5,42);R_(g,'#c9c4d8',4,2,32,8);disc(g,'#2a1f3d',20,24,6);R_(g,'#2a1f3d',18,24,4,10)});x.drawImage(s,X+4,Y-8);
   if(f.door6){x.globalAlpha=.35+.25*Math.sin(t/200);disc(x,'#ffd24a',X+24,Y+16,14);x.globalAlpha=1}}
- else if(o.id.indexOf('cd')===0){const c=card7(o.k);R_(x,'rgba(0,0,0,.18)',X+8,Y+36,32,6);R_(x,'#fffdf4',X+9,Y+8,30,28);R_(x,'#d9a441',X+9,Y+8,30,7);x.fillStyle='#3a3350';x.font='bold '+(c.w.length<=3?12:c.w.length===4?10:9)+'px sans-serif';x.textAlign='center';x.fillText(c.w,X+24,Y+29);if(Math.sin(t/280+o.x*2)>0.4){R_(x,'#fff4a8',X+33,Y+4,3,3)}}
+ else if(o.id.indexOf('cd')===0){const c=card7(f.gd7&&f.gd7[o.id]?f.gd7[o.id]:o.k);R_(x,'rgba(0,0,0,.18)',X+8,Y+36,32,6);R_(x,'#fffdf4',X+9,Y+8,30,28);R_(x,'#d9a441',X+9,Y+8,30,7);x.fillStyle='#3a3350';x.font='bold '+(c.w.length<=3?12:c.w.length===4?10:9)+'px sans-serif';x.textAlign='center';x.fillText(c.w,X+24,Y+29);if(Math.sin(t/280+o.x*2)>0.4){R_(x,'#fff4a8',X+33,Y+4,3,3)}}
  else if(o.id.indexOf('hs')===0){R_(x,'rgba(90,70,40,.5)',X+8,Y+30,32,8);R_(x,'rgba(120,95,55,.6)',X+14,Y+26,20,6);R_(x,'#5da24a',X+10,Y+22,5,10);R_(x,'#6fb85a',X+22,Y+20,5,12);R_(x,'#5da24a',X+33,Y+22,5,10);if(Math.sin(t/300+o.x)>0){R_(x,'#fff4a8',X+22,Y+10,3,3)}}
  else if(o.id==='box7'){R_(x,'rgba(0,0,0,.18)',X+6,Y+38,36,6);R_(x,'#8a6844',X+7,Y+16,34,24);R_(x,'#a87f52',X+7,Y+16,34,6);R_(x,'#6e5233',X+7,Y+27,34,3);if(f.box7){const c=card7(f.box7);R_(x,'#fffdf4',X+13,Y+2,22,17);R_(x,'#d9a441',X+13,Y+2,22,5);x.fillStyle='#3a3350';x.font='bold 8px sans-serif';x.textAlign='center';x.fillText(c.w,X+24,Y+16)}}
  else if(o.id==='chest7'||o.id==='chest8'){const ice=o.id==='chest8',open=ice?f.door8:f.door7;const s=spr('ch'+o.id,46,40,g=>{R_(g,ice?'#8ec3ea':'#a8744a',4,14,38,24);R_(g,ice?'#bfe4fb':'#c99a68',4,6,38,12);R_(g,ice?'#4f86c6':'#7a4f2f',4,16,38,3);R_(g,'#ffd24a',19,14,8,10);R_(g,'#d9a93a',21,18,4,4)});x.drawImage(s,X+1,Y+6);
