@@ -27,7 +27,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 @keyframes daGlow{from{box-shadow:0 0 2px 0 rgba(255,210,74,.25)}to{box-shadow:0 0 16px 6px rgba(255,210,74,.95);filter:brightness(1.16)}}
 #dlg{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(255,250,240,.96);color:#2a1f3d;border:2px solid #2a1f3d;border-radius:12px;padding:10px;font-size:14px;line-height:1.5}#dlg button{display:block;width:100%;margin-top:6px;font:inherit;padding:8px;border:2px solid #d8505e;background:#fff;color:#2a1f3d;border-radius:10px}.dnx{text-align:right;color:#d8505e;font-size:12px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.ptg button{font:inherit;font-size:12px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 2px}.ptg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .slots button{display:flex;align-items:center;justify-content:center;gap:6px}.ptg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.cic{image-rendering:pixelated;flex:none;width:auto}.slots .cic{height:34px}.ptg .cic{height:46px}.ptg small{font-size:10px;opacity:.85}.abtn{display:block;width:100%;margin:8px 0 0;font:inherit;font-size:16px;color:#fff;background:var(--acc);border:2px solid var(--acc);border-radius:14px;padding:14px 0}.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:300px;margin:0 auto}.pad button{font:inherit;font-size:18px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 0;touch-action:none;user-select:none}.pad #dA{font-size:13px;background:var(--acc);color:#fff;border-color:var(--acc)}.nrow{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px;font-size:12px;line-height:1.5}
-#titleScr{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;text-align:center;padding:24px 18px;transition:opacity .55s ease;overflow:hidden}
+#titleScr{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:14px;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;text-align:center;padding:calc(24px + env(safe-area-inset-top)) 18px 28px;transition:opacity .55s ease;overflow-y:auto;overflow-x:hidden}
 #titleScr.hide{opacity:0;pointer-events:none}
 #titleScr .star{position:absolute;color:#ffd24a;animation:tw 2.6s ease-in-out infinite;pointer-events:none}
 @keyframes tw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
@@ -36,6 +36,8 @@ canvas{image-rendering:pixelated;max-width:100%}
 #titleScr h1{font-size:clamp(30px,8.4vw,44px);margin:6px 0 0;letter-spacing:.06em;color:#fff;text-shadow:0 3px 0 #171238,0 0 22px #8f7ff0aa}
 #titleScr .tsub{color:#b3a6cc;font-size:clamp(13px,3.6vw,16px);letter-spacing:.14em}
 #titleScr .tstars{color:#ffd24a;font-size:15px;letter-spacing:.5em;margin-top:2px}
+#titleScr img{margin-top:auto}
+#titleScr .tnote{margin-bottom:auto}
 #startBtn{margin-top:14px;font:inherit;font-size:20px;font-weight:700;letter-spacing:.08em;color:#241d4d;background:linear-gradient(#ffe89a,#ffd24a);border:3px solid #fff2c4;border-radius:16px;padding:14px 42px;cursor:pointer;box-shadow:0 6px 0 #b8912e,0 12px 26px rgba(0,0,0,.45);animation:pulse 1.8s ease-in-out infinite}
 #startBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #b8912e}
 @keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.1)}}
@@ -47,9 +49,9 @@ canvas{image-rendering:pixelated;max-width:100%}
 #stgTabs{display:flex;gap:8px;margin-bottom:12px;width:100%;max-width:430px}
 #stgTabs button{flex:1;font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:9px 4px;cursor:pointer}
 #stgTabs button.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
-#slotRow{display:flex;gap:8px;margin-top:7px}
-#slotRow .slotB{font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:8px 14px;cursor:pointer;line-height:1.25}
-#slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc}
+#slotRow{display:flex;gap:8px;margin-top:7px;width:100%;max-width:420px}
+#slotRow .slotB{flex:1 1 0;min-width:0;font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:8px 4px;cursor:pointer;line-height:1.3;white-space:nowrap}
+#slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc;white-space:nowrap;margin-top:2px}
 #slotRow .slotB.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
 #slotRow .slotB.on small{color:#ffe89a}
 #stgScr{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
@@ -1242,7 +1244,7 @@ document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.da
 setMode('room');
 {const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
  const sr=document.getElementById('slotRow');
- for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'・ノート'+e.notes.length:'')}}catch(e){}
+ for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'<br>ノート'+e.notes.length:'')}}catch(e){}
   b.innerHTML='データ'+n+'<small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(delMode){pendDel=n;document.getElementById('delMsg').textContent='データ'+n+'を 消しますか？（もとには もどせません）';document.getElementById('delBox').hidden=false;return}if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}
  let delMode=false,pendDel=0;const db2=document.getElementById('delBtn');
 db2.onclick=e=>{e.stopPropagation();delMode=!delMode;pendDel=0;document.getElementById('delBox').hidden=true;db2.textContent=delMode?'消すのを やめる':'データを消す';sr.querySelectorAll('.slotB').forEach(b=>b.classList.toggle('del',delMode))};
