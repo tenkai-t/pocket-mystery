@@ -1046,7 +1046,7 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
      g.drawImage(cv2,0,0);for(const[a,b]of [[14,26],[34,22],[24,34],[40,32]]){R_(g,'#d8505e',a,b,4,4);R_(g,'#ff8a95',a,b,2,2)}});x.drawImage(s,X-2,Y+6)}}
  else if(o.id==='crack'){if(!f.crack){const s=spr('crack',52,48,g=>{disc(g,'#5b5580',26,28,20);disc(g,'#5b5580',14,32,12);disc(g,'#5b5580',38,32,12);R_(g,'#7a72a0',10,14,22,4);R_(g,'#7a72a0',8,20,12,4);R_(g,'#3a3560',12,38,30,6);
      for(let j=0;j<26;j++)R_(g,'#1f1a3d',26+Math.round(Math.sin(j*.6)*3),12+j,2,1)});x.drawImage(s,X-2,Y+4)}}
- else if(o.id.startsWith('ped')){const i=+o.id[3],c=f.pl[i];const s=spr('ped',44,56,g=>{R_(g,'#a9a4b8',6,16,32,36);R_(g,'#c9c4d8',6,16,5,36);R_(g,'#7d7890',32,16,6,36);R_(g,'#c9c4d8',2,6,40,12);R_(g,'#7d7890',2,14,40,4);R_(g,'#7d7890',2,48,40,8);R_(g,'#c9c4d8',2,48,40,2);for(let k=0;k<4;k++)R_(g,'#7d7890',12+k*6,24+(k%2)*8,2,6)});
+ else if(o.id.startsWith('ped')&&o.id!=='pedMoon'&&o.id!=='pedCloud'&&o.id!=='pedSun'&&o.id!=='pedStar'){const i=+o.id[3],c=f.pl[i];const s=spr('ped',44,56,g=>{R_(g,'#a9a4b8',6,16,32,36);R_(g,'#c9c4d8',6,16,5,36);R_(g,'#7d7890',32,16,6,36);R_(g,'#c9c4d8',2,6,40,12);R_(g,'#7d7890',2,14,40,4);R_(g,'#7d7890',2,48,40,8);R_(g,'#c9c4d8',2,48,40,2);for(let k=0;k<4;k++)R_(g,'#7d7890',12+k*6,24+(k%2)*8,2,6)});
   x.drawImage(s,X+2,Y-12);R_(x,'#2a1f3d',X+14,Y-4,20,10);R_(x,c?PCOL[c]:'#4a3596',X+16,Y-2,16,6);if(c){x.globalAlpha=.35+.25*Math.sin(t/200);disc(x,PCOL[c],X+24,Y,14);x.globalAlpha=1}}
  else if(o.id==='gate'){const open=gateOpen();const s=spr('gate'+open,112,92,g=>{R_(g,'#a9a4b8',4,14,26,78);R_(g,'#a9a4b8',82,14,26,78);R_(g,'#c9c4d8',4,14,6,78);R_(g,'#c9c4d8',82,14,6,78);R_(g,'#7d7890',24,14,6,78);R_(g,'#7d7890',102,14,6,78);
    R_(g,'#a9a4b8',0,2,112,20);R_(g,'#c9c4d8',0,2,112,5);R_(g,'#7d7890',0,18,112,5);R_(g,open?'#1f2a5a':'#7d7890',30,22,52,70);if(!open){R_(g,'#6d6880',55,22,2,70);R_(g,'#5d5870',32,34,20,2);R_(g,'#5d5870',60,34,20,2)}
@@ -1077,7 +1077,7 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
   if(placed){const col={star:'#e0483e',moon:'#5fa8f0',sun:'#ffd24a'}[kind];disc(x,col,X+24,Y+35,5);x.fillStyle='rgba(255,255,255,.75)';x.fillRect(X+22,Y+32,2,2)}
   else{x.fillStyle='#3a3350';x.beginPath();x.arc(X+24,Y+35,5,0,7);x.fill();x.strokeStyle='#8d86a3';x.lineWidth=1;x.stroke()}}
  else if(o.id==='tap11'){x.fillStyle='#7a4f2f';x.fillRect(X,Y+2,48,6);x.fillStyle='#5d2a4a';x.fillRect(X+2,Y+6,44,36);x.fillStyle='#6e3560';x.fillRect(X+4,Y+8,40,32);
-  const cols=['#e0483e','#5fa8f0','#ffd24a'],kinds=['star','moon','sun'];for(let k=0;k<3;k++){const cx=X+11+k*13;sym11(x,kinds[k],cx,Y+17,6,kinds[k]==='moon'?'#ffd24a':'#f2e7ff');disc(x,cols[k],cx,Y+33,4)}}
+  const cols=['#e0483e','#5fa8f0','#ffd24a'],kinds=['star','moon','sun'];for(let k=0;k<3;k++){const cx=X+11+k*13;sym11(x,kinds[k],cx,Y+17,6,'#f2e7ff');disc(x,cols[k],cx,Y+33,4)}}
  else if(o.id==='gemR'||o.id==='gemG'){const col=o.id==='gemR'?'#e0483e':'#ffd24a',bob=Math.round(Math.sin(t/280+o.x)*1.5);
   x.fillStyle=col;x.beginPath();x.moveTo(X+24,Y+16+bob);x.lineTo(X+32,Y+26+bob);x.lineTo(X+24,Y+36+bob);x.lineTo(X+16,Y+26+bob);x.closePath();x.fill();
   x.fillStyle='rgba(255,255,255,.7)';x.fillRect(X+21,Y+22+bob,3,3)}
