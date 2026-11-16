@@ -599,7 +599,7 @@ function buildMap11(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));fo
  [[6,12],[14,14],[12,7],[16,7],[8,15]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]=','});
  for(let y=1;y<=16;y++){if(y!==9&&(M[y][10]==='.'||M[y][10]===','))M[y][10]='='}
  for(let y=1;y<=8;y++)if(M[y][9]==='.')M[y][9]='=';for(let y=1;y<=4;y++)M[y][9]='#';return M}
-const OBJ11=[{id:'tablet11',x:5,y:15,solid:true},{id:'picMoon',x:5,y:10,solid:true},{id:'picCloud',x:15,y:10,solid:true},{id:'tap11',x:12,y:10,solid:true},{id:'gstStar',x:4,y:13,solid:true},{id:'gstMoon',x:10,y:13,solid:true},{id:'gstSun',x:16,y:13,solid:true},{id:'gemG',x:3,y:16},{id:'gemR',x:17,y:16},{id:'grass11',x:8,y:15},{id:'door11rock',x:10,y:9},{id:'chasm',x:5,y:7},{id:'ledge',x:5,y:4},{id:'picStar',x:3,y:2,solid:true},{id:'chest11',x:18,y:2,solid:true},{id:'picSun',x:18,y:6,solid:true},{id:'pedMoon',x:11,y:2,solid:true},{id:'pedCloud',x:13,y:2,solid:true},{id:'pedSun',x:15,y:2,solid:true},{id:'pedStar',x:17,y:2,solid:true},{id:'gate',x:9,y:0,w:2}];
+const OBJ11=[{id:'tablet11',x:5,y:15,solid:true},{id:'picMoon',x:5,y:10,solid:true},{id:'picCloud',x:15,y:10,solid:true},{id:'tap11',x:12,y:10,solid:true},{id:'gstStar',x:4,y:13,solid:true},{id:'gstMoon',x:10,y:13,solid:true},{id:'gstSun',x:16,y:13,solid:true},{id:'gemG',x:3,y:16},{id:'gemR',x:17,y:16},{id:'grass11',x:8,y:15},{id:'door11rock',x:10,y:9},{id:'chasm',x:5,y:7},{id:'ledge',x:5,y:4},{id:'picStar',x:3,y:2,solid:true},{id:'chest11',x:18,y:2,solid:true},{id:'picSun',x:18,y:6,solid:true},{id:'pedCloud',x:11,y:2,solid:true},{id:'pedStar',x:13,y:2,solid:true},{id:'pedMoon',x:15,y:2,solid:true},{id:'pedSun',x:17,y:2,solid:true},{id:'gate',x:9,y:0,w:2}];
 function buildMap12(){const M=Array.from({length:MH},()=>Array(MW).fill('.'));for(let x=0;x<MW;x++){M[0][x]='#';M[MH-1][x]='#'}for(let y=0;y<MH;y++){M[y][0]='#';M[y][MW-1]='#'}
  M[0][9]='G';M[0][10]='G';for(let x=1;x<=18;x++){M[7][x]='v';M[8][x]='v'}
  [[4,4],[15,4],[7,3],[12,3],[2,16],[17,16],[5,10],[14,12]].forEach(([x,y])=>{if(M[y][x]==='.')M[y][x]='#'});
@@ -1030,10 +1030,10 @@ function makeMap(){const cv=mkCv(MW*TS,MH*TS),x=cv.getContext('2d'),cave=AREA===
    const a=10+Math.floor(hsh(tx,ty,23)*18);for(let j=0;j<18;j++)R_(x,'#2a1f3d',X+a+Math.round(Math.sin(j*.7)*3),Y+8+j,1,1);continue}
   const s=treeSpr(Math.floor(hsh(tx,ty,24)*3));x.drawImage(s,X+24-31,Y+TS-76)}
  return cv}
-function sym11(x,kind,cx,cy,r,col){x.fillStyle=col;x.strokeStyle=col;
+function sym11(x,kind,cx,cy,r,col,ol){x.fillStyle=col;x.strokeStyle=col;
  if(kind==='sun'){disc(x,col,cx,cy,Math.max(2,r*.6));x.lineWidth=2;x.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4;x.moveTo(cx+Math.cos(a)*r*.78,cy+Math.sin(a)*r*.78);x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}x.stroke()}
- else if(kind==='moon'){x.beginPath();x.arc(cx,cy,r,-Math.PI/2,Math.PI/2,false);x.arc(cx+r*.38,cy,r*.8,Math.PI/2,-Math.PI/2,true);x.closePath();x.fill()}
- else if(kind==='star'){x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r,sx=cx+Math.cos(a)*rr,sy=cy+Math.sin(a)*rr;if(k)x.lineTo(sx,sy);else x.moveTo(sx,sy)}x.closePath();x.fill()}
+ else if(kind==='moon'){x.beginPath();x.arc(cx,cy,r,Math.PI/2,Math.PI*1.5,false);x.arc(cx+r*.45,cy,r*.78,Math.PI*1.5,Math.PI/2,true);x.closePath();x.fill();if(ol){x.strokeStyle=ol;x.lineWidth=1.2;x.stroke()}}
+ else if(kind==='star'){x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r,sx=cx+Math.cos(a)*rr,sy=cy+Math.sin(a)*rr;if(k)x.lineTo(sx,sy);else x.moveTo(sx,sy)}x.closePath();x.fill();if(ol){x.strokeStyle=ol;x.lineWidth=1.2;x.stroke()}}
  else{disc(x,col,cx-r*.35,cy+r*.18,r*.42);disc(x,col,cx,cy-r*.1,r*.55);disc(x,col,cx+r*.38,cy+r*.18,r*.4)}}
 function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math.sin(t/260)*2);
  if(o.id.startsWith('tablet')){const c2=o.id!=='tablet',lit={tablet:f.read,tablet2:f.read2,tablet3:f.read3,tablet4:f.read4,tablet5:f.read5,tablet6:f.read6,tablet7:f.read7,tablet8:f.read8,tablet9:f.read9,tablet10:f.read10,tablet11:f.read11,tablet12:f.read12}[o.id];const s=spr(o.id,38,56,g=>{const base=c2?'#5b5580':'#a9a4b8',lt=c2?'#7a72a0':'#c9c4d8',dk=c2?'#3a3560':'#7d7890';
@@ -1065,19 +1065,19 @@ function drawObj(x,o,t){const X=o.x*TS,Y=o.y*TS,f=EX.f;const bob=Math.round(Math
  else if(o.id==='sign5'||o.id==='lakeSpot'||o.id==='sign12'||o.id==='sign12b'){const s=spr('sign5',36,44,g=>{R_(g,'#7a4f2f',16,14,5,28);R_(g,'#a8744a',2,2,32,16);R_(g,'#c99a68',2,2,32,3);R_(g,'#5b3a20',8,8,20,2);R_(g,'#5b3a20',8,12,14,2)});x.drawImage(s,X+6,Y+2)}
  else if(o.id==='picMoon'||o.id==='picCloud'||o.id==='picSun'||o.id==='picStar'){const kind=o.id.slice(3).toLowerCase(),N={moon:2,cloud:3,sun:4,star:5}[kind],SPK=[[4,4],[31,4],[4,27],[31,27],[17,2]];
   x.fillStyle='#7a4f2f';x.fillRect(X+2,Y+2,44,40);x.fillStyle='#d9a441';x.fillRect(X+4,Y+4,40,36);x.fillStyle='#232048';x.fillRect(X+6,Y+6,36,32);
-  sym11(x,kind,X+24,Y+22,10,kind==='moon'?'#cfe4ff':kind==='cloud'?'#aab6e8':'#ffd24a');
+  sym11(x,kind,X+24,Y+22,10,kind==='cloud'?'#aab6e8':'#ffd24a');
   x.fillStyle='#fff6c9';for(let k=0;k<N;k++)x.fillRect(X+6+SPK[k][0]-2,Y+6+SPK[k][1]-2,4,4)}
  else if(o.id==='pedMoon'||o.id==='pedCloud'||o.id==='pedSun'||o.id==='pedStar'){const kind=o.id.slice(3).toLowerCase(),ORDER=['moon','cloud','sun','star'],lit=EX.f.seqDone11||ORDER.indexOf(kind)<EX.f.seq11;
-  const s=spr('ped11base',36,30,g=>{g.fillStyle='#6f6885';g.fillRect(4,16,28,12);g.fillStyle='#8d86a3';g.fillRect(0,26,36,4);g.fillRect(8,6,20,10);g.fillStyle='#a79fc0';g.fillRect(8,6,20,3)});x.drawImage(s,X+6,Y+16);
-  if(lit){x.save();x.globalAlpha=.35;disc(x,'#ffe98a',X+24,Y+12,11);x.restore()}
-  sym11(x,kind,X+24,Y+12,7,lit?'#ffdf6b':'#8d86a3')}
+  const s=spr('ped11mark',36,34,g=>{g.fillStyle='#57516e';g.fillRect(9,0,18,5);g.fillStyle='#8d86a3';g.fillRect(4,5,28,7);g.fillStyle='#a79fc0';g.fillRect(4,5,28,2);g.fillStyle='#6f6885';g.fillRect(6,12,24,18);g.fillStyle='#7d7694';g.fillRect(6,12,24,2);g.fillStyle='#8d86a3';g.fillRect(0,30,36,4)});x.drawImage(s,X+6,Y+12);
+  if(lit){x.save();x.globalAlpha=.45;disc(x,'#ffe98a',X+24,Y+33,12);x.restore()}
+  sym11(x,kind,X+24,Y+33,9,lit?'#ffdf6b':'#3a3450',lit?'#7a5a10':'#221e33')}
  else if(o.id==='gstStar'||o.id==='gstMoon'||o.id==='gstSun'){const kind=o.id.slice(3).toLowerCase(),placed=kind==='star'?EX.f.gemR11:kind==='moon'?EX.f.gemB11:EX.f.gemG11;
   const s=spr('ped11base',36,30,g=>{g.fillStyle='#6f6885';g.fillRect(4,16,28,12);g.fillStyle='#8d86a3';g.fillRect(0,26,36,4);g.fillRect(8,6,20,10);g.fillStyle='#a79fc0';g.fillRect(8,6,20,3)});x.drawImage(s,X+6,Y+16);
-  sym11(x,kind,X+24,Y+12,8,'#cfc8e8');
+  sym11(x,kind,X+24,Y+12,8,'#e6e0ff','#4a4266');
   if(placed){const col={star:'#e0483e',moon:'#5fa8f0',sun:'#ffd24a'}[kind];disc(x,col,X+24,Y+35,5);x.fillStyle='rgba(255,255,255,.75)';x.fillRect(X+22,Y+32,2,2)}
   else{x.fillStyle='#3a3350';x.beginPath();x.arc(X+24,Y+35,5,0,7);x.fill();x.strokeStyle='#8d86a3';x.lineWidth=1;x.stroke()}}
  else if(o.id==='tap11'){x.fillStyle='#7a4f2f';x.fillRect(X,Y+2,48,6);x.fillStyle='#5d2a4a';x.fillRect(X+2,Y+6,44,36);x.fillStyle='#6e3560';x.fillRect(X+4,Y+8,40,32);
-  const cols=['#e0483e','#5fa8f0','#ffd24a'],kinds=['star','moon','sun'];for(let k=0;k<3;k++){const cx=X+11+k*13;sym11(x,kinds[k],cx,Y+17,6,'#f2e7ff');disc(x,cols[k],cx,Y+33,4)}}
+  const cols=['#e0483e','#5fa8f0','#ffd24a'],kinds=['star','moon','sun'];for(let k=0;k<3;k++){const cx=X+11+k*13;sym11(x,kinds[k],cx,Y+17,6,kinds[k]==='moon'?'#ffd24a':'#f2e7ff');disc(x,cols[k],cx,Y+33,4)}}
  else if(o.id==='gemR'||o.id==='gemG'){const col=o.id==='gemR'?'#e0483e':'#ffd24a',bob=Math.round(Math.sin(t/280+o.x)*1.5);
   x.fillStyle=col;x.beginPath();x.moveTo(X+24,Y+16+bob);x.lineTo(X+32,Y+26+bob);x.lineTo(X+24,Y+36+bob);x.lineTo(X+16,Y+26+bob);x.closePath();x.fill();
   x.fillStyle='rgba(255,255,255,.7)';x.fillRect(X+21,Y+22+bob,3,3)}
