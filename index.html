@@ -49,9 +49,11 @@ canvas{image-rendering:pixelated;max-width:100%}
 #stgTabs{display:flex;gap:8px;margin-bottom:12px;width:100%;max-width:430px}
 #stgTabs button{flex:1;font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:9px 4px;cursor:pointer}
 #stgTabs button.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
-#slotRow{display:flex;gap:8px;margin-top:7px;width:100%;max-width:420px}
-#slotRow .slotB{flex:1 1 0;min-width:0;font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:8px 4px;cursor:pointer;line-height:1.3;white-space:nowrap}
-#slotRow .slotB small{display:block;font-size:10.5px;font-weight:400;color:#b3a6cc;white-space:nowrap;margin-top:2px}
+#slotRow{display:block;margin-top:7px;width:100%;max-width:420px;max-height:224px;overflow-y:auto;padding:2px}
+#slotRow .slotB{display:flex;width:100%;box-sizing:border-box;align-items:center;justify-content:space-between;gap:8px;font:inherit;font-size:14.5px;font-weight:700;color:#f4ecff;background:#352a6e;border:2px solid #57498f;border-radius:12px;padding:8px 12px;cursor:pointer;line-height:1.3;margin-top:6px;text-align:left}
+#slotRow .slotB:first-child{margin-top:0}
+#slotRow .slotB .snm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#slotRow .slotB small{font-size:10.5px;font-weight:400;color:#b3a6cc;white-space:nowrap}
 #slotRow .slotB.on{border-color:#ffd24a;background:#4a3a8f;color:#ffd24a}
 #slotRow .slotB.on small{color:#ffe89a}
 #stgScr{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#352a6e 0%,#241d4d 55%,#171238 100%);color:#f4ecff;display:flex;flex-direction:column;align-items:center;padding:26px 18px;overflow-y:auto}
@@ -86,6 +88,11 @@ canvas{image-rendering:pixelated;max-width:100%}
 #stgClose{font:inherit;font-size:14px;font-weight:700;color:#f4ecff;background:#241d4d;border:2px solid #57498f;border-radius:12px;padding:10px 34px;cursor:pointer;margin-top:16px}
 #stgBtnT{font:inherit;font-size:14px;font-weight:700;color:#ffe89a;background:#352a6e;border:2px solid #ffd24a;border-radius:12px;padding:9px 22px;cursor:pointer}
 #delBtn{font:inherit;font-size:12.5px;color:#f0a0a8;background:transparent;border:2px solid #7a4460;border-radius:12px;padding:7px 14px;cursor:pointer;margin-left:8px}
+#nameBtn{font:inherit;font-size:12.5px;color:#a8d8ff;background:transparent;border:2px solid #44607a;border-radius:12px;padding:7px 14px;cursor:pointer;margin-left:8px}
+#slotRow .slotB.nam{border-color:#4a9eda}
+#nameBox{margin-top:10px;background:#352a6e;border:2px solid #4a9eda;border-radius:12px;padding:10px 14px;color:#f4ecff;font-size:14px}
+#nameBox button{font:inherit;font-weight:700;border-radius:10px;padding:8px 18px;cursor:pointer;margin:8px 4px 0}
+#nameIn{font:inherit;font-size:16px;width:100%;box-sizing:border-box;margin-top:8px;padding:9px 10px;border-radius:10px;border:2px solid #57498f;background:#241d4d;color:#fff}
 #slotRow .slotB.del{border-color:#e0483e}
 #delBox{margin-top:10px;background:#352a6e;border:2px solid #e0483e;border-radius:12px;padding:10px 14px;color:#f4ecff;font-size:14px}
 #delBox button{font:inherit;font-weight:700;border-radius:10px;padding:8px 18px;cursor:pointer;margin:8px 4px 0}
@@ -99,7 +106,7 @@ canvas{image-rendering:pixelated;max-width:100%}
 <div class="tsub">ドット絵の なぞとき たんけんゲーム</div>
 <div class="tstars">★ ★ ★</div>
 <button id="startBtn">▶ はじめる</button>
-<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button><button id="delBtn">データを消す</button><div id="delBox" hidden><div id="delMsg"></div><button id="delYes">消す</button><button id="delNo">やめる</button></div><div class="tslab">たんけんモード</div><div id="modeRow"><button data-m="kids">小学生</button><button data-m="nazo">謎解き</button><button data-m="kyoyo">教養（大人用）</button></div><div><button id="stgBtnT">ステージを えらぶ</button></div>
+<div class="tslab">セーブデータ</div><div id="slotRow"></div><button id="tsnd">おと: ON</button><button id="delBtn">データを消す</button><button id="nameBtn">名前をつける</button><div id="delBox" hidden><div id="delMsg"></div><button id="delYes">消す</button><button id="delNo">やめる</button></div><div id="nameBox" hidden><div id="nameMsg"></div><input id="nameIn" type="text" maxlength="12" placeholder="データの名前（12文字まで）"><div><button id="nameYes">つける</button><button id="nameNo">やめる</button></div></div><div class="tslab">たんけんモード</div><div id="modeRow"><button data-m="kids">小学生</button><button data-m="nazo">謎解き</button><button data-m="kyoyo">教養（大人用）</button></div><div><button id="stgBtnT">ステージを えらぶ</button></div>
 <div class="tnote">ぜんぶで 10ステージ ／ おとが でます</div>
 </div>
 <div id="stgScr" hidden><div class="stgT">ステージを えらぶ</div><div id="stgList"></div><button id="stgClose">とじる</button></div>
@@ -156,7 +163,7 @@ const D={"items":[{"id":"wizard","slot":"head","name":"おれまがりぼうし"
 function animList(c){const base=[['idle','たいき'],['walk','あるく'],['joy','よろこぶ'],['sleep','ねる']];return(c==='kohaku'||c==='astra')?base.concat([['idle_down','まえ'],['idle_up','うしろ']]):base.concat([['idle_side','よこ'],['idle_up','うしろ'],['special','とくべつ']])}
 function vsuf(c,v){if(c==='kohaku'||c==='astra')return v==='up'?'_up':v==='down'?'_down':'';return v==='up'?'_up':v==='side'?'_side':''}
 const OX=2,OY=8,W=28;let mode='room',ch='ribbon',slot='head',an='idle',fi=0,timer=null;
-const mem={};const SLOT=Math.min(3,Math.max(1,parseInt(localStorage.getItem('mv_activeslot')||'1')||1));const SK=k=>SLOT===1?k:k.replace('mv_','mv_s'+SLOT+'_');
+const mem={};const SLOT=Math.min(20,Math.max(1,parseInt(localStorage.getItem('mv_activeslot')||'1')||1));const SK=k=>SLOT===1?k:k.replace('mv_','mv_s'+SLOT+'_');
 const st={get(k){try{return localStorage.getItem(SK(k))}catch(e){return mem[SK(k)]||null}},set(k,v){try{localStorage.setItem(SK(k),v)}catch(e){mem[SK(k)]=v}}};
 function load(){try{return JSON.parse(st.get('mv_dress1')||'{}')}catch(e){return{}}}
 let S=load();S.cur=S.cur||{};S.slots=S.slots||{};
@@ -1543,13 +1550,22 @@ const exCv=document.getElementById('ex');exCv.width=VW*2;exCv.height=VH*2;initEx
 document.querySelectorAll('#mtabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 setMode('room');
 {const ts=document.getElementById('titleScr'),sb=document.getElementById('startBtn');
- const sr=document.getElementById('slotRow');
- for(let n=1;n<=3;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?'<br>ノート'+e.notes.length:'')}}catch(e){}
-  b.innerHTML='データ'+n+'<small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(delMode){pendDel=n;document.getElementById('delMsg').textContent='データ'+n+'を 消しますか？（もとには もどせません）';document.getElementById('delBox').hidden=false;return}if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}
- let delMode=false,pendDel=0;const db2=document.getElementById('delBtn');
-db2.onclick=e=>{e.stopPropagation();delMode=!delMode;pendDel=0;document.getElementById('delBox').hidden=true;db2.textContent=delMode?'消すのを やめる':'データを消す';sr.querySelectorAll('.slotB').forEach(b=>b.classList.toggle('del',delMode))};
+ const sr=document.getElementById('slotRow');const NSLOT=20;
+ let delMode=false,pendDel=0,nameMode=false,pendName=0;
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const loadNames=()=>{try{return JSON.parse(localStorage.getItem('mv_slotnames')||'{}')||{}}catch(e){return{}}};
+ const slotName=n=>{const v=loadNames()[n];return(typeof v==='string'&&v.trim())?v:'データ'+n};
+ const renderSlots=()=>{sr.innerHTML='';for(let n=1;n<=NSLOT;n++){const b=document.createElement('button');b.className='slotB'+(n===SLOT?' on':'')+(delMode?' del':'')+(nameMode?' nam':'');let stx='あき';try{const raw=localStorage.getItem(n===1?'mv_explore1':'mv_s'+n+'_explore1');if(raw){const e=JSON.parse(raw);stx='ステージ'+(e.area||1)+(e.notes&&e.notes.length?' ・ ノート'+e.notes.length:'')}}catch(e){}
+  b.innerHTML='<span class="snm">'+esc(slotName(n))+'</span><small>'+stx+'</small>';b.onclick=e=>{e.stopPropagation();if(delMode){pendDel=n;document.getElementById('delMsg').textContent='「'+slotName(n)+'」を 消しますか？（もとには もどせません）';document.getElementById('delBox').hidden=false;return}if(nameMode){pendName=n;document.getElementById('nameMsg').textContent='データ'+n+'の 名前を つけます（空にすると「データ'+n+'」に もどります）';const ni=document.getElementById('nameIn');ni.value=loadNames()[n]||'';document.getElementById('nameBox').hidden=false;if(ni.focus)ni.focus();return}if(n===SLOT)return;localStorage.setItem('mv_activeslot',String(n));try{sessionStorage.setItem('mv_autostart','1')}catch(e){}location.reload()};sr.appendChild(b)}};
+ renderSlots();
+ const db2=document.getElementById('delBtn');
+db2.onclick=e=>{e.stopPropagation();delMode=!delMode;nameMode=false;pendDel=0;document.getElementById('delBox').hidden=true;document.getElementById('nameBox').hidden=true;document.getElementById('nameBtn').textContent='名前をつける';db2.textContent=delMode?'消すのを やめる':'データを消す';renderSlots()};
 document.getElementById('delNo').onclick=e=>{e.stopPropagation();pendDel=0;document.getElementById('delBox').hidden=true};
-document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1','mv_photos1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}location.reload()};
+document.getElementById('delYes').onclick=e=>{e.stopPropagation();if(!pendDel)return;for(const k of['mv_dress1','mv_room2','mv_explore1','mv_photos1'])try{localStorage.removeItem(pendDel===1?k:'mv_s'+pendDel+'_'+k.slice(3))}catch(err){}try{const nm=loadNames();delete nm[pendDel];localStorage.setItem('mv_slotnames',JSON.stringify(nm))}catch(err){}location.reload()};
+const nb2=document.getElementById('nameBtn');
+nb2.onclick=e=>{e.stopPropagation();nameMode=!nameMode;delMode=false;pendName=0;document.getElementById('nameBox').hidden=true;document.getElementById('delBox').hidden=true;db2.textContent='データを消す';nb2.textContent=nameMode?'名前つけを やめる':'名前をつける';renderSlots()};
+document.getElementById('nameNo').onclick=e=>{e.stopPropagation();pendName=0;document.getElementById('nameBox').hidden=true};
+document.getElementById('nameYes').onclick=e=>{e.stopPropagation();if(!pendName)return;const v=document.getElementById('nameIn').value.trim().slice(0,12);try{const nm=loadNames();if(v)nm[pendName]=v;else delete nm[pendName];localStorage.setItem('mv_slotnames',JSON.stringify(nm))}catch(err){}pendName=0;document.getElementById('nameBox').hidden=true;renderSlots();sfx('pick')};
 document.getElementById('stgBtnT').onclick=e=>{e.stopPropagation();openStageSel(n=>{doStageJump(n);go()})};
 function modeBtns(){document.querySelectorAll('#modeRow button').forEach(b=>b.classList.toggle('on',b.dataset.m===(EX.mode||'kids')))}
 function pickMode(m){if((EX.mode||'kids')!==m){EX.mode=m;const as=MODES[m].areas,t=as[Math.min(((EX.maxm&&EX.maxm[m])||1),as.length)-1];setArea(t)}modeBtns()}
