@@ -1180,6 +1180,9 @@ function stepFly(dt){fly.t+=dt;const u=Math.min(1,fly.t/1400);const AR=AREAS[ARE
  if(u>=1){for(const c of order){const p=P(c);if(!canStand(p.x,p.y)){let ok=false;for(const o of[[0,0],[28,0],[-28,0],[56,0],[-56,0],[0,-26],[0,26],[28,-26],[-28,-26],[28,26],[-28,26],[14,0],[-14,0],[0,-13],[0,13]]){const X=tg[0]+o[0],Y=tg[1]+o[1];if(canStand(X,Y)){p.x=X;p.y=Y;ok=true;break}}if(!ok){p.x=tg[0];p.y=tg[1]}}}if(AREA===1)EX.f.island=fly.to;else if(AREA===5||AREA===10)EX.f['isle'+AREA]=fly.to;else{EX.f['far'+AREA]=fly.to;if(AREA===2){EX.f.far=fly.to;if(fly.to)addNote('far')}}fly=null;sfx('ok');trail=[];for(let i=0;i<40;i++)trail.push([leader().x,leader().y]);saveEx()}}
 /* --- update --- */
 let stepAcc=130,lastTileC='';
+function gateBack(){const L=leader();const ox=L.x,oy=L.y;const cs=[[0,42],[0,30],[0,54],[-24,42],[24,42],[-24,30],[24,30],[0,66],[-48,42],[48,42],[-24,54],[24,54],[0,18],[-24,18],[24,18]];
+ for(const c of cs){const nx=ox+c[0],ny=oy+c[1];if(canStand(nx,ny)){L.x=nx;L.y=ny;trail.push([L.x,L.y]);return}}
+ for(let r=2;r<=4;r++)for(let a=0;a<8;a++){const nx=ox+Math.round(Math.cos(a*Math.PI/4)*r*24),ny=oy+42+Math.round(Math.sin(a*Math.PI/4)*r*24);if(canStand(nx,ny)){L.x=nx;L.y=ny;trail.push([L.x,L.y]);return}}}
 function exUpdate(dt){if(fly){stepFly(dt);animChars(dt);return}
  const L=leader();let dx=dir.x,dy=dir.y;L.moving=false;
  if((dx||dy)&&!dlg){const n=Math.hypot(dx,dy),mg=Math.min(1,n);dx/=n;dy/=n;const sp=TS*2.75*dt/1000*mg;let nx=L.x+dx*sp,ny=L.y+dy*sp;if(canStand(nx,L.y))L.x=nx;if(canStand(L.x,ny))L.y=ny;
@@ -1194,12 +1197,12 @@ function exUpdate(dt){if(fly){stepFly(dt);animChars(dt);return}
  if(gateOpen()&&tileAt(Math.floor(L.x/TS),Math.floor((L.y-18)/TS))==='G'&&!dlg){
   const n=AREA,ck=n===1?'cleared':'cleared'+n,nx={1:'かずの どうくつ',2:'てんびんのおか',3:'でんきの回廊',4:'コンパスの森',5:'じしゃくの山',6:'ことばの橋',7:'こおりの湖',8:'にじの泉',9:'ちずきごうの村'}[n];
   if(n<10){if(!EX.f[ck]){EX.f[ck]=true;if(n===1)addNote('gate');for(const c in EX.stats){addStat(c,'c',3);EX.stats[c].b+=2}saveEx();sfx('gate');
-     say(['門を くぐると、まばゆい ひかりの むこうに','あたらしい せかい「'+nx+'」が ひろがって いた…!','つぎの せかいへ いってみる?'],['つぎのせかいへ','ここにのこる'],k=>{if(k===0)setArea(n+1);else{L.y+=42;trail.push([L.x,L.y])}})}
-   else say(['つぎの せかいへ いく?'],['いく','やめる'],k=>{if(k===0)setArea(n+1);else{L.y+=42;trail.push([L.x,L.y])}})}
-  else if(n===10){if(!EX.f.cleared10){EX.f.cleared10=true;for(const c in EX.stats){addStat(c,'c',3);EX.stats[c].b+=2}saveEx();sfx('gate');say(['村の門の むこうは、星の 見える 丘…。','【ちずきごうの村 クリア】 つづきは つぎの たびで!'],null,()=>{L.y+=42;trail.push([L.x,L.y])})}
-  else say(['村の門の むこうは、星の 見える 丘…。','この先は まだ ない。つづきを おたのしみに!'],null,()=>{L.y+=42;trail.push([L.x,L.y])})}
-  else if(!EX.f[ck]){EX.f[ck]=true;{const md=modeOfArea(n);EX.maxm=EX.maxm||{kids:1,nazo:1,kyoyo:1};EX.maxm[md]=Math.max(EX.maxm[md]||1,Math.min(stageNoOf(n)+1,MODES[md].areas.length))}for(const c in EX.stats){addStat(c,'c',3);EX.stats[c].b+=2}saveEx();sfx('gate');say(['門の むこうは、まだ 見ぬ せかい…。','【'+AREAS[n].name+' クリア】 つづきは つぎの たびで!'],null,()=>{L.y+=42;trail.push([L.x,L.y])})}
-  else say(['この先は まだ ない。つづきを おたのしみに!'],null,()=>{L.y+=42;trail.push([L.x,L.y])})}
+     say(['門を くぐると、まばゆい ひかりの むこうに','あたらしい せかい「'+nx+'」が ひろがって いた…!','つぎの せかいへ いってみる?'],['つぎのせかいへ','ここにのこる'],k=>{if(k===0)setArea(n+1);else{gateBack()}})}
+   else say(['つぎの せかいへ いく?'],['いく','やめる'],k=>{if(k===0)setArea(n+1);else{gateBack()}})}
+  else if(n===10){if(!EX.f.cleared10){EX.f.cleared10=true;for(const c in EX.stats){addStat(c,'c',3);EX.stats[c].b+=2}saveEx();sfx('gate');say(['村の門の むこうは、星の 見える 丘…。','【ちずきごうの村 クリア】 つづきは つぎの たびで!'],null,()=>{gateBack()})}
+  else say(['村の門の むこうは、星の 見える 丘…。','この先は まだ ない。つづきを おたのしみに!'],null,()=>{gateBack()})}
+  else if(!EX.f[ck]){EX.f[ck]=true;{const md=modeOfArea(n);EX.maxm=EX.maxm||{kids:1,nazo:1,kyoyo:1};EX.maxm[md]=Math.max(EX.maxm[md]||1,Math.min(stageNoOf(n)+1,MODES[md].areas.length))}for(const c in EX.stats){addStat(c,'c',3);EX.stats[c].b+=2}saveEx();sfx('gate');say(['門の むこうは、まだ 見ぬ せかい…。','【'+AREAS[n].name+' クリア】 つづきは つぎの たびで!'],null,()=>{gateBack()})}
+  else say(['この先は まだ ない。つづきを おたのしみに!'],null,()=>{gateBack()})}
  nazoTick(dt);animChars(dt)}
 function animChars(dt){for(const p of party){const an=(p.moving?'walk':'idle')+vsuf(p.c,p.view);if(p.an!==an){p.an=an;p.fi=0;p.ft=0}const A=D.chars[p.c].anims[an];p.ft+=dt;if(p.ft>=A[p.fi%A.length].d){p.ft=0;p.fi=(p.fi+1)%A.length}}}
 /* --- draw --- */
